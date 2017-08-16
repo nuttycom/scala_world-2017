@@ -1,0 +1,18 @@
+[submodule "reveal.js"]
+	path = reveal.js
+	url = https://github.com/hakimel/reveal.js.git
+[submodule "thx.schema"]
+	path = sample_code/thx.schema
+	url = https://github.com/nuttycom/thx.schema.git
+[submodule "thx.json"]
+	path = sample_code/thx.json
+	url = https://github.com/nuttycom/thx.json.git
+[submodule "sample_code/schematic"]
+	path = sample_code/schematic
+	url = https://github.com/nuttycom/schematic.git
+[submodule "sample_code/thx.schema"]
+	path = sample_code/thx.schema
+	url = https://github.com/nuttycom/thx.schema.git
+[submodule "sample_code/thx.json"]
+	path = sample_code/thx.json
+	url = https://github.com/nuttycom/thx.json.git
