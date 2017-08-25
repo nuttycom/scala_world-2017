@@ -9,25 +9,44 @@ Goals
 * Discuss how **fix-point types** allow us to annotate recursive data structures
 * See how these things come together in the **schematic** library
 * Explore the design of an FP library from start to finish
-* Make hard things easy
+
+Overview
+--------
+
+* This talk is about the design of a library using pure FP style.
+
+* Dissatisfaction-Driven Design
+
+* Problem: Serialization
+    * Having to maintain both serializers and deserializers is silly
+    * Problems exist with generic programming approaches 
+    * Legacy wire formats can present challenges.
+
+* Solution:
+    * Build a description of the data structure that can be interpreted
+      to derive serializers, deserializers, and more.
+
+<div class="notes">
+This is a composition of talks, Rob Norris and John De Goes
+
+What I'm presenting here are not really new ideas, just taking
+some existing ideas and composing them in a slightly new way
+
+Functional programming is programming with values.
+
+The problem with generic programming approaches is that serialized
+form becomes coupled to the type being represented, making it harder 
+to change data structures. Your serialized form is your public API; it
+needs to be stable and to have a controlled upgrade path.
+</div>
 
 Outline
 -------
 
-* This talk is about design of a library in functional programming
-* Composition of talks, Rob Norris and John De Goes
-  * What I'm presenting here are not really new ideas, just taking
-    some existing ideas and composing them in a slightly new way
-    - dissatisfaction driving design
-* Problem: Serialization
-  * Having to maintain both serializers and deserializers
-  * Problems with generic programming approaches - serialized
-    form becomes coupled to the type being represented, making
-    it harder to change things.
-  * Difficulties in dealing with legacy wire formats
-* Solution:
-  * Build a description of the data structure that can be interpreted
-    to derive serializers, deserializers, and more.
+* Build a library to solve the problem of JSON serialization
+* Look at what else we might use it for
+* Figure out how it's deficient
+* Generalize it with fancy types
 
 Example
 -------
@@ -35,7 +54,6 @@ Example
 A simple sums-of-products data type.
 
 ~~~scala
-
 case class Person(
   name: String, 
   birthDate: Double // seconds since the epoch
@@ -46,8 +64,93 @@ sealed trait Role
 
 case object User extends Role
 case class Administrator(department: String) extends Role
-
 ~~~
+
+Example
+-------
+
+A simple sums-of-products data type.
+
+~~~scala
+case class Person(
+  name: String, 
+  birthDate: Double // seconds since the epoch
+  roles: Vector[Role]
+)
+
+sealed trait Role
+
+case object User extends Role
+case class Administrator(department: String) extends Role
+~~~
+
+* Primitives
+
+Example
+-------
+
+A simple sums-of-products data type.
+
+~~~scala
+case class Person(
+  name: String, 
+  birthDate: Double // seconds since the epoch
+  roles: Vector[Role]
+)
+
+sealed trait Role
+
+case object User extends Role
+case class Administrator(department: String) extends Role
+~~~
+
+* Primitives
+* Sequences
+
+Example
+-------
+
+A simple sums-of-products data type.
+
+~~~scala
+case class Person(
+  name: String, 
+  birthDate: Double // seconds since the epoch
+  roles: Vector[Role]
+)
+
+sealed trait Role
+
+case object User extends Role
+case class Administrator(department: String) extends Role
+~~~
+
+* Primitives
+* Sequences
+* Sum types
+
+Example
+-------
+
+A simple sums-of-products data type.
+
+~~~scala
+case class Person(
+  name: String, 
+  birthDate: Double // seconds since the epoch
+  roles: Vector[Role]
+)
+
+sealed trait Role
+
+case object User extends Role
+case class Administrator(department: String) extends Role
+~~~
+
+* Primitives
+* Sequences
+* Sum types
+* Records
 
 JSON Representation
 -------------------
@@ -74,27 +177,17 @@ JSON Representation
 }
 ~~~
 
-Components of a data structure
-------------------------------
-
-* Primitives
-* Sequences
-* Sums
-* Records
-
 Primitives
 ----------
 
-Descriptions of primitive types
+Use a GADT to describe the kinds of elements that can exist.
 
 ~~~scala
-
 sealed trait JSchema[A]
 
-case object JBoolT extends JSchema[Boolean]
 case object JStrT extends JSchema[String]
 case object JNumT extends JSchema[Double]
-
+case object JBoolT extends JSchema[Boolean]
 ~~~
 
 Primitive serialization
@@ -113,11 +206,16 @@ def serialize[A](schema: JSchema[A], value: A): Json = {
 }
 ~~~
 
+<div class="notes">
+We can write a serializer that can render any type for which we
+have a schema to JSON.
+</div>
+
 Primitive parsing
 -----------------
 
 Create a parser by generating a natural transformation between
-a schema and an argonaut DecodeJson instance.
+a schema and an [argonaut](http://argonaut.io) DecodeJson instance.
 
 ~~~scala
 import argonaut.DecodeJson
@@ -170,65 +268,6 @@ def decoder[A](schema: JSchema[A]): DecodeJson[A] = {
   }
 }
 ~~~
-
-Sums
-----
-
-~~~scala
-case class JOneOfT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
-
-case class Alt[A, B](id: String, base: JSchema[B], review: B -> A, preview: A -> Option[B])
-~~~
-
-Sum type serialization
-----------------------
-
-~~~scala
-def serialize[A](schema: JSchema[A], value: A): Json = {
-  schema match {
-    //...
-    case JOneOfT(alts) => 
-      val results = alts flatMap {
-        case Alt(id, base, _, preview) => 
-          preview(value).map(serialize(base, _)).toList map { json =>
-            jObject(JsonObject.single(id, json))
-          }
-      } 
-
-      results.head //yeah, I know
-  }
-}
-~~~
-
-Sum type parsing
-----------------
-
-~~~scala
-def decoder[A](schema: JSchema[A]): DecodeJson[A] = {
-  schema match {
-    //...
-    case JOneOfT(alts) => DecodeJson { (c: HCursor) => 
-      val results = for {
-        fields <- c.fields.toList
-        altResult <- alts flatMap {
-          case Alt(id, base, review, _) =>
-            fields.exists(_ == id).option(
-              c.downField(id).as(decoder(base)).map(review)
-            ).toList
-        }
-      } yield altResult 
-
-      val altIds = alts.map(_.id)
-      results match {
-        case x :: Nil => x
-        case Nil => DecodeResult.fail(s"No fields found matching any of ${altIds}", c.history)
-        case xs => DecodeResult.fail(s"More than one matching field found among ${altIds}", c.history)
-      }
-    }
-  }
-}
-~~~
-
 
 Records
 -------
@@ -370,13 +409,288 @@ Records, Take 3
 ~~~scala
 import scalaz.FreeAp
 
-case class JObjT[A](recordBuilder: FreeAp[({ type l[a] = PropSchema[A, a] })#l, A]) extends JSchema[A]
+case class JObjT[A](recordBuilder: FreeAp[PropSchema[A, ?], A]) extends JSchema[A]
 
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
+
+Record serialization
+--------------------
+
+~~~scala
+  def serializeObj[A](rb: FreeAp[PropSchema[A, ?], A], value: A): Json = {
+    jObject(
+      rb.foldMap[State[JsonObject, ?]](
+        new NaturalTransformation[PropSchema[A, ?], State[JsonObject, ?]] {
+          def apply[B](ps: PropSchema[A, B]): State[JsonObject, B] = {
+            val elem: B = ps.accessor(value)
+            for {
+              obj <- get
+              _ <- put(obj + (ps.fieldName, serialize(ps.valueSchema, elem)))
+            } yield elem
+          }
+        }
+      ).exec(JsonObject.empty)
+    )
+  }
+~~~
+
+Record decoding
+---------------
+
+~~~scala
+  def decodeObj[A](rb: FreeAp[PropSchema[A, ?], A]): DecodeJson[A] = {
+    implicit val djap: Applicative[DecodeJson] = new Applicative[DecodeJson] {
+      def point[A](a: => A) = DecodeJson(_ => DecodeResult.ok(a))
+      def ap[A, B](fa: => DecodeJson[A])(ff: => DecodeJson[A => B]): DecodeJson[B] = {
+        fa.flatMap(a => ff.map(_(a)))
+      }
+    }
+
+    rb.foldMap(
+      new NaturalTransformation[PropSchema[A, ?], DecodeJson] {
+        def apply[B](ps: PropSchema[A, B]): DecodeJson[B] = {
+          DecodeJson(_.downField(ps.fieldName).as(decoder(ps.valueSchema)))
+        }
+      }
+    )
+  }
+~~~
+
+Sum types
+----
+
+We represent sum types as a list of alternatives.
+
+Each constructor of the sum type is associated with a value that
+maps from the arguments demanded by that constructor to a value
+of the sum type. 
+
+~~~scala
+case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
+
+case class Alt[A, B](id: String, base: JSchema[B], review: B => A, preview: A => Option[B])
+~~~
+
+Sum types
+----
+
+We represent sum types as a list of alternatives.
+
+Each constructor of the sum type is associated with a value that
+maps from the arguments demanded by that constructor to a value
+of the sum type. 
+
+~~~scala
+case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
+
+case class Alt[A, B](id: String, base: JSchema[B], review: B => A, preview: A => Option[B])
+~~~
+
+Sum types
+----
+
+~~~scala
+case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
+
+case class Alt[A, B](id: String, base: JSchema[B], review: B => A, preview: A => Option[B])
+
+// EXAMPLE
+//
+// case class Administrator(department: String) extends Role
+// 
+// {
+//   "admin": { "department": "windmill-tilting" }
+// } 
+//
+~~~
+
+Sum types
+----
+
+~~~scala
+case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
+
+case class Alt[A, B](id: String, base: JSchema[B], review: B => A, preview: A => Option[B])
+
+// EXAMPLE
+//
+// case class Administrator(department: String) extends Role
+// 
+// {
+//   "admin": { "department": "windmill-tilting" }
+// } 
+//
+
+val adminRoleAlt = Alt[Role, String](
+  "user", 
+  JObjT(
+    FreeAp.lift[PropSchema[String, ?], String](
+      PropSchema("department", JStrT, identity)
+    )
+  ), 
+  Administrator(_),
+  { 
+    case Administrator(dept) => Some(dept)
+    case _ => None
+  }
+)
+~~~
+
+Sum types
+----
+
+~~~scala
+case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
+
+case class Alt[A, B](id: String, base: JSchema[B], review: B => A, preview: A => Option[B])
+
+// EXAMPLE
+//
+// case object User extends Role
+//
+// "user": {}
+//
+~~~
+
+Sum types
+----
+
+~~~scala
+case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
+
+case class Alt[A, B](id: String, base: JSchema[B], review: B => A, preview: A => Option[B])
+
+// EXAMPLE
+//
+// case object User extends Role
+//
+// "user": {}
+//
+
+val userRoleAlt = Alt[Role, Unit](
+  "user", 
+  JObjT(
+    FreeAp.pure[PropSchema[Unit, ?], Unit](
+      Unit
+    )
+  ), 
+  (_: Unit) => User, 
+  { 
+    case User => Some(Unit)
+    case _ => None
+  }
+)
+
+val roleSchema: JSchema[Role] = JSumT(userRoleAlt :: adminRoleAlt :: Nil)
+~~~
+
+Sum type serialization
+----------------------
+
+~~~scala
+def serialize[A](schema: JSchema[A], value: A): Json = {
+  schema match {
+    //...
+    case JSumT(alts) => 
+      val results = alts flatMap {
+        case Alt(id, base, _, preview) => 
+          preview(value).map(serialize(base, _)).toList map { json =>
+            jObject(JsonObject.single(id, json))
+          }
+      } 
+
+      results.head //yeah, I know
+  }
+}
+~~~
+
+<div class="notes">
+The partiality of results.head is actually not as bad as it looks; the reason 
+that it's *arguably* excusable is that if you encounter a case where no
+alternative is able to satisfy the serialization of that value, your 
+program *should* just explode. In an ideal world we'd be able to statically
+check the inhabitants of that array of alternatives against the constructors
+of the algebraic data type that we're building a schema for, but unfortunately
+the set of constructors is not a first-class value in any language that I 
+know of.
+</div>
+
+Sum type parsing
+----------------
+
+~~~scala
+def decoder[A](schema: JSchema[A]): DecodeJson[A] = {
+  schema match {
+    //...
+    case JSumT(alts) => DecodeJson { (c: HCursor) => 
+      val results = for {
+        fields <- c.fields.toList
+        altResult <- alts flatMap {
+          case Alt(id, base, review, _) =>
+            fields.exists(_ == id).option(
+              c.downField(id).as(decoder(base)).map(review)
+            ).toList
+        }
+      } yield altResult 
+
+      val altIds = alts.map(_.id)
+      results match {
+        case x :: Nil => x
+        case Nil => DecodeResult.fail(s"No fields found matching any of ${altIds}", c.history)
+        case xs => DecodeResult.fail(s"More than one matching field found among ${altIds}", c.history)
+      }
+    }
+  }
+}
+~~~
+
 What else can we do?
 --------------------
 
-* Gen instances
-* User interfaces (Pellucid demo)
-* ???
+* ScalaCheck [Gen](https://github.com/rickynils/scalacheck/blob/master/src/main/scala/org/scalacheck/Gen.scala) instances
+* Binary serialization using [scodec](https://github.com/scodec/scodec)
+* [User interfaces](https://app-dev.pellucid.com)
+* Interpret to whatever Applicative you want, really.
+
+<div class="notes">
+Franco Ponticelli, a coworker of mine, wrote a schema interpreter that
+he uses to serialize values to database tables... and provides the 'CREATE TABLE'
+statements accordingly.
+</div>
+
+So... what's the catch?
+-----------------------
+
+* Fixed set of primitives is overly limiting
+* Unable to provide additional metadata about values/fields without altering the schema algebra
+
+So let's fix these things.
+
+Problem 1: Primitives
+---------------------
+
+We started off by defining schema for String, Double, and Boolean. This clearly isn't enough.
+For example, I want to be able to define a schema where date values, represented in JSON
+as strings, are first-class.
+
+~~~scala
+
+// sealed trait JSchema[A]
+// 
+// case object JStrT extends JSchema[String]
+// case object JNumT extends JSchema[Double]
+// case object JBoolT extends JSchema[Boolean]
+
+sealed trait JSchema[P[_], A]
+
+case class JPrimT[P[_], A](pa: P[A]) extends JSchema[P, A]
+
+sealed trait ToJson[S[_]] {
+  def serialize(schema: S[A], value: A): Json
+}
+
+implicit class JSchemaToJson[P[_]: ToJson] extends ToJson[JSchema[P, ?]] {
+  def serialize[A](schema: JSchema[P, A], value: A): Json = ???
+}
+~~~
