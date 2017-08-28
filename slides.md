@@ -71,7 +71,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: Double // seconds since the epoch
+  birthDate: DateTime,
   roles: Vector[Role]
 )
 
@@ -89,7 +89,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: Double // seconds since the epoch
+  birthDate: DateTime,
   roles: Vector[Role]
 )
 
@@ -109,7 +109,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: Double // seconds since the epoch
+  birthDate: DateTime,
   roles: Vector[Role]
 )
 
@@ -130,7 +130,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: Double // seconds since the epoch
+  birthDate: Instant,
   roles: Vector[Role]
 )
 
@@ -152,7 +152,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: Double // seconds since the epoch
+  birthDate: Instant,
   roles: Vector[Role]
 )
 
@@ -197,9 +197,13 @@ Example Schema
  
 ~~~scala
 val personSchema = Schema.rec[Prim, Person](
-  ^^[TProp[Person, ?], String, Double, Vector[Role], Person](
+  ^^[TProp[Person, ?], String, Instant, Vector[Role], Person](
     required("name", Prim.str, Person.name.asGetter),
-    required("birthDate", Prim.double, Person.birthDate.asGetter),
+    required("birthDate", Prim.long, Getter.id[Long]).contramap((_: Person).birthDate.getMillis),
+    required("birthDate", Prim.long, Getter.id[Long])).dimap(
+      (_: Person).birthDate.getMillis,
+      new Instant(_: Long)
+    ),
     required("roles", Prim.arr(roleSchema), Person.roles.asGetter)
   )(Person.apply _)
 )
@@ -210,9 +214,9 @@ Example Schema
  
 ~~~scala
 val personSchema = Schema.rec[Prim, Person](
-  ^^[TProp[Person, ?], String, Double, Vector[Role], Person](
+  ^^[TProp[Person, ?], String, Instant, Vector[Role], Person](
     required("name", Prim.str, Person.name.asGetter),
-    required("birthDate", Prim.double, Person.birthDate.asGetter),
+    required("birthDate", Prim.long, Person.birthDate.asGetter composeGetter Getter(new Instant(_))),
     required("roles", Prim.arr(roleSchema), Person.roles.asGetter)
   )(Person.apply _)
 )
@@ -246,7 +250,7 @@ Use a GADT to describe the kinds of elements that can exist.
 sealed trait JSchema[A]
 
 case object JStrT extends JSchema[String]
-case object JNumT extends JSchema[Double]
+case object JNumT extends JSchema[Long]
 case object JBoolT extends JSchema[Boolean]
 ~~~
 
@@ -259,7 +263,7 @@ Use a GADT to describe the kinds of elements that can exist.
 sealed trait JSchema[A]
 
 case object JStrT extends JSchema[String]
-case object JNumT extends JSchema[Double]
+case object JNumT extends JSchema[Long]
 case object JBoolT extends JSchema[Boolean]
 ~~~
 
@@ -295,7 +299,7 @@ def decoder[A](schema: JSchema[A]): DecodeJson[A] = {
   schema match {
     case JBoolT => BooleanDecodeJson
     case JStrT  => StringDecodeJson
-    case JNumT  => DoubleDecodeJson
+    case JNumT  => LongDecodeJson
   }
 }
 ~~~
@@ -385,7 +389,7 @@ Records
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: Double // seconds since the epoch
+  birthDate: Instant 
 )
 ~~~
 
@@ -395,7 +399,7 @@ Records
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: Double // seconds since the epoch
+  birthDate: Instant
 )
 ~~~
 
@@ -416,7 +420,7 @@ Records
 sealed trait JSchema[A]
 
 case object JStrT extends JSchema[String]
-case object JNumT extends JSchema[Double]
+case object JNumT extends JSchema[Long]
 case object JBoolT extends JSchema[Boolean]
 
 case class JVecT[A](elemType: JSchema[A]) extends JSchema[Vector[A]]
@@ -829,7 +833,7 @@ So let's fix these things.
 Problem 1: Primitives
 ---------------------
 
-We started off by defining schema for String, Double, and Boolean. This clearly
+We started off by defining schema for String, Long, and Boolean. This clearly
 isn't enough.  For example, I want to be able to define a schema where date
 values, represented in JSON as strings, are first-class.
 
@@ -837,7 +841,7 @@ values, represented in JSON as strings, are first-class.
 // sealed trait JSchema[A]
 // 
 // case object JStrT extends JSchema[String]
-// case object JNumT extends JSchema[Double]
+// case object JNumT extends JSchema[Long]
 // case object JBoolT extends JSchema[Boolean]
 
 sealed trait GSchema[P[_], A]
@@ -862,7 +866,7 @@ interested in.
 ~~~scala
 sealed trait JsonPrim[A]
 case object JStrT extends JsonPrim[String]
-case object JNumT extends JsonPrim[Double]
+case object JNumT extends JsonPrim[Long]
 case object JBoolT extends JsonPrim[Boolean]
 ~~~
 
@@ -875,7 +879,7 @@ interested in.
 ~~~scala
 sealed trait JsonPrim[A]
 case object JStrT extends JsonPrim[String]
-case object JNumT extends JsonPrim[Double]
+case object JNumT extends JsonPrim[Long]
 case object JBoolT extends JsonPrim[Boolean]
 ~~~
 
@@ -1106,4 +1110,18 @@ case class HCofree[F[_[_], _], A, I](f: F[HCofree[F, A, ?], I], a: A)
 type Schema[P, A] = HCofree[Schema[?[_], P, ?], A]
 ~~~
 
+Drawbacks
+---------
 
+The Scala compiler hates me.
+
+~~~
+[error] /Users/nuttycom/personal/scala_world-2017/sample_code/xenomorph/src/main/scala/xenomorph/Schema.scala:263: type mismatch;
+[error]  found   : [γ$13$]xenomorph.PropSchema[O,[γ$40$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$40$],γ$13$] ~> [γ$14$]xenomorph.PropSchema[N,[γ$40$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$40$],γ$14$]
+[error]     (which expands to)  scalaz.NaturalTransformation[[γ$13$]xenomorph.PropSchema[O,[γ$40$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$40$],γ$13$],[γ$14$]xenomorph.PropSchema[N,[γ$40$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$40$],γ$14$]]
+[error]  required: [γ$3$]xenomorph.PropSchema[O,[γ$2$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$2$],γ$3$] ~> G
+[error]     (which expands to)  scalaz.NaturalTransformation[[γ$3$]xenomorph.PropSchema[O,[γ$2$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$2$],γ$3$],G]
+[error]       PropSchema.contraNT[O, N, Schema[A, P, ?]](f)
+~~~
+
+That's the result of leaving off a type ascription, there's actually nothing incorrect about the code.
