@@ -8,7 +8,7 @@ Goals
 * Explore the design of an FP library from start to finish
 * Introduce **free applicative functors** in the context of a "real-world" problem
 * Discuss how **fix-point types** allow us to annotate recursive data structures
-* See how these things come together in the [**schematic**](https://github.com/nuttycom/schematic) library
+* See how these things come together in the [**xenomorph**](https://github.com/nuttycom/xenomorph) library
 
 Overview
 --------
