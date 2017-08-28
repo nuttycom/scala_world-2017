@@ -199,7 +199,6 @@ Example Schema
 val personSchema = Schema.rec[Prim, Person](
   ^^[TProp[Person, ?], String, Instant, Vector[Role], Person](
     required("name", Prim.str, Person.name.asGetter),
-    required("birthDate", Prim.long, Getter.id[Long]).contramap((_: Person).birthDate.getMillis),
     required("birthDate", Prim.long, Getter.id[Long])).dimap(
       (_: Person).birthDate.getMillis,
       new Instant(_: Long)
@@ -216,7 +215,10 @@ Example Schema
 val personSchema = Schema.rec[Prim, Person](
   ^^[TProp[Person, ?], String, Instant, Vector[Role], Person](
     required("name", Prim.str, Person.name.asGetter),
-    required("birthDate", Prim.long, Person.birthDate.asGetter composeGetter Getter(new Instant(_))),
+    required("birthDate", Prim.long, Getter.id[Long])).dimap(
+      (_: Person).birthDate.getMillis,
+      new Instant(_: Long)
+    ),
     required("roles", Prim.arr(roleSchema), Person.roles.asGetter)
   )(Person.apply _)
 )
