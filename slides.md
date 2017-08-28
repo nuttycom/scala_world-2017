@@ -167,8 +167,8 @@ case class Administrator(department: String) extends Role
 * Sum types
 * Records
 
-JSON Representation
--------------------
+Example JSON Representation
+---------------------------
 
 ~~~json
 {
@@ -190,6 +190,51 @@ JSON Representation
     }
   ]
 }
+~~~
+
+Example Schema
+--------------
+ 
+~~~scala
+val personSchema = Schema.rec[Prim, Person](
+  ^^[TProp[Person, ?], String, Double, Vector[Role], Person](
+    required("name", Prim.str, Person.name.asGetter),
+    required("birthDate", Prim.double, Person.birthDate.asGetter),
+    required("roles", Prim.arr(roleSchema), Person.roles.asGetter)
+  )(Person.apply _)
+)
+~~~
+
+Example Schema
+--------------
+ 
+~~~scala
+val personSchema = Schema.rec[Prim, Person](
+  ^^[TProp[Person, ?], String, Double, Vector[Role], Person](
+    required("name", Prim.str, Person.name.asGetter),
+    required("birthDate", Prim.double, Person.birthDate.asGetter),
+    required("roles", Prim.arr(roleSchema), Person.roles.asGetter)
+  )(Person.apply _)
+)
+~~~
+
+~~~scala
+val roleSchema = Schema.oneOf(
+  alt[Unit, Prim, Role, Unit](
+    "user", 
+    Schema.empty,
+    Role.user composeIso GenIso.unit[User.type]
+  ) ::
+  alt[Unit, Prim, Role, Administrator](
+    "admin", 
+    rec[Prim, Administrator](
+      required("department", Prim.str, Administrator.department.asGetter) map {
+        Administrator.apply _
+      }
+    ),
+    Role.admin
+  ) :: Nil
+)
 ~~~
 
 Primitives
