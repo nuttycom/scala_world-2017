@@ -71,7 +71,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: DateTime,
+  birthDate: Instant,
   roles: Vector[Role]
 )
 
@@ -89,7 +89,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: DateTime,
+  birthDate: Instant,
   roles: Vector[Role]
 )
 
@@ -109,7 +109,7 @@ A simple sums-of-products data type.
 ~~~scala
 case class Person(
   name: String, 
-  birthDate: DateTime,
+  birthDate: Instant,
   roles: Vector[Role]
 )
 
@@ -196,8 +196,8 @@ Example Schema
 --------------
  
 ~~~scala
-val personSchema = Schema.rec[Prim, Person](
-  ^^[TProp[Person, ?], String, Instant, Vector[Role], Person](
+val personSchema = rec(
+  ^^(
     required("name", Prim.str, Person.name.asGetter),
     required("birthDate", Prim.long, Getter.id[Long])).dimap(
       (_: Person).birthDate.getMillis,
@@ -212,7 +212,7 @@ Example Schema
 --------------
  
 ~~~scala
-val personSchema = Schema.rec[Prim, Person](
+val personSchema = rec[Prim, Person](
   ^^[TProp[Person, ?], String, Instant, Vector[Role], Person](
     required("name", Prim.str, Person.name.asGetter),
     required("birthDate", Prim.long, Getter.id[Long])).dimap(
@@ -224,6 +224,9 @@ val personSchema = Schema.rec[Prim, Person](
 )
 ~~~
 
+Example Schema
+--------------
+ 
 ~~~scala
 val roleSchema = Schema.oneOf(
   alt[Unit, Prim, Role, Unit](
@@ -327,7 +330,7 @@ case class JVecT[A](elemType: JSchema[A]) extends JSchema[Vector[A]]
 ~~~
 
 ~~~scala
-val boolsSchema: JSchema[Vector[Boolean]] = JArrayT(JBoolT, 0, None)
+val boolsSchema: JSchema[Vector[Boolean]] = JVecT(JBoolT)
 ~~~
 
 Sequence serialization
@@ -341,14 +344,14 @@ case class JVecT[A](elemType: JSchema[A]) extends JSchema[Vector[A]]
 ~~~
 
 ~~~scala
-val boolsSchema: JSchema[Vector[Boolean]] = JArrayT(JBoolT, 0, None)
+val boolsSchema: JSchema[Vector[Boolean]] = JVecT(JBoolT)
 ~~~
 
 ~~~scala
 def serialize[A](schema: JSchema[A], value: A): Json = {
   schema match {
     //...
-    case JVecT(elemSchema) => jArray(value.map(serialize(elemSchema, _)).toList)
+    case JVecT(elemSchema) => jArray(value.map(serialize(elemSchema, _)))
   }
 }
 ~~~
@@ -364,14 +367,14 @@ case class JVecT[A](elemType: JSchema[A]) extends JSchema[Vector[A]]
 ~~~
 
 ~~~scala
-val boolsSchema: JSchema[Vector[Boolean]] = JArrayT(JBoolT, 0, None)
+val boolsSchema: JSchema[Vector[Boolean]] = JVecT(JBoolT)
 ~~~
 
 ~~~scala
 def serialize[A](schema: JSchema[A], value: A): Json = {
   schema match {
     //...
-    case JVecT(elemSchema) => jArray(value.map(serialize(elemSchema, _)).toList)
+    case JVecT(elemSchema) => jArray(value.map(serialize(elemSchema, _)))
   }
 }
 ~~~
@@ -432,7 +435,7 @@ Records, Take 2
 ---------------
 
 We need an applicative functor, but maybe not for the whole schema type.
-What about just for the product types?
+What about just for the record (product) types?
 
 ~~~scala
 case class JObjT[A](props: Props[A]) extends JSchema[A]
@@ -442,7 +445,7 @@ Records, Take 2
 ---------------
 
 We need an applicative functor, but maybe not for the whole schema type.
-What about just for the product types?
+What about just for the record (product) types?
 
 ~~~scala
 case class JObjT[A](props: Props[A]) extends JSchema[A]
@@ -488,7 +491,10 @@ sealed trait Props[O, A]
 
 case class PureProps[O, A](a: A) extends Props[O, A]
 
-case class ApProps[O, A, B](prop: PropSchema[O, B], rest: Props[O, B => A]) extends Props[O, A]
+case class ApProps[O, A, B](
+  prop: PropSchema[O, B], 
+  rest: Props[O, B => A]
+) extends Props[O, A]
 ~~~
 
 Records, Take 2
@@ -531,18 +537,19 @@ see if you can just implement the Applicative typeclass in a way that makes sens
 
 Records, Take 2
 ---------------
+~~~scala
+sealed trait Props[O, A] 
+
+case class PureProps[O, A](a: A) extends Props[O, A]
+
+case class ApProps[O, A, B](
+  prop: PropSchema[O, B], 
+  rest: Props[O, B => A]
+) extends Props[O, A]
+~~~
 
 ~~~scala
-case class JObjT[A](props: Props[PropSchema, A, A]) extends JSchema[A]
-
-sealed trait Props[F[_, _], O, A] 
-
-case class ApProps[F[_, _], O, A, B](
-  prop: F[O, B], 
-  rest: Props[F, O, B => A]
-) extends Props[F, O, A]
-
-case class PureProps[F[_, _], O, A](a: A) extends Props[F, O, A]
+case class JObjT[O](props: Props[O, O]) extends JSchema[O]
 
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
@@ -551,16 +558,38 @@ Records, Take 2
 ---------------
 
 ~~~scala
-case class JObjT[A](props: Props[PropSchema[A, ?], A]) extends JSchema[A]
+sealed trait Props[F[_, _], O, A] 
 
+case class PureProps[F[_, _], O, A](a: A) extends Props[F, O, A]
+
+case class ApProps[F[_, _], O, A, B](
+  prop: F[O, B], 
+  rest: Props[F, O, B => A]
+) extends Props[F, O, A]
+~~~
+
+~~~scala
+case class JObjT[A](props: Props[PropSchema, A, A]) extends JSchema[A]
+
+case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
+~~~
+
+Records, Take 2
+---------------
+
+~~~scala
 sealed trait Props[F[_], A] 
+
+case class PureProps[F[_], A](a: A) extends Props[F, A]
 
 case class ApProps[F[_], A, B](
   prop: F[B], 
   rest: Props[F, B => A]
 ) extends Props[F, A]
+~~~
 
-case class PureProps[F[_], A](a: A) extends Props[F, A]
+~~~scala
+case class JObjT[A](props: Props[PropSchema[A, ?], A]) extends JSchema[A]
 
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
@@ -569,16 +598,18 @@ Records, Take 3
 ---------------
 
 ~~~scala
-case class JObjT[A](props: FreeAp[PropSchema[A, ?], A]) extends JSchema[A]
-
 sealed trait FreeAp[F[_], A] 
+
+case class Pure[F[_], A](a: A) extends FreeAp[F, A]
 
 case class Ap[F[_], A, B](
   head: F[B], 
   tail: FreeAp[F, B => A]
 ) extends FreeAp[F, A]
+~~~
 
-case class Pure[F[_], A](a: A) extends FreeAp[F, A]
+~~~scala
+case class JObjT[A](props: FreeAp[PropSchema[A, ?], A]) extends JSchema[A]
 
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
