@@ -1087,7 +1087,7 @@ class ProfF[S](
 ~~~scala
 case class Cofree[F[_], A](f: F[Cofree[F, A]], a: A)
 
-type IdProf = Cofree[Prof, Int]
+type IdProf = Cofree[ProfF, Int]
 ~~~
 
 Hat tip to Rob Norris, go watch his talk [here](https://www.youtube.com/watch?v=7xSfLPD6tiQ)
