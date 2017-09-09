@@ -13,19 +13,19 @@ Goals
 Overview
 --------
 
-* This talk is about the design of a library using pure FP style.
-* Dissatisfaction-Driven Design
 * Problem: Serialization
-    * Having to maintain both serializers and deserializers is silly
-    * Problems exist with macros/generic programming approaches 
+    * Having to maintain both serializers and deserializers is silly.
+    * Problems exist with macros/generic programming approaches.
     * Legacy wire formats & evolving protocols can present challenges.
 * Solution:
-    * Build a description of the data structure that can be interpreted
-      to derive serializers, deserializers, and more.
+    * Build a description of the data structure as a value. 
+    * Build interpreters for that description that produce serializers, 
+      deserializers, and more.
+* Conclusion:
     * When faced with a problem, describe that problem completely. 
       The solution usually resides within that description.
-* Conclusion:
-    * Abstractive capability in programming languages & its uses
+    * Abstractions allow us to reduce a problem to its essential
+      core.
 
 <div class="notes">
 This is a composition of talks, Rob Norris and John De Goes
@@ -33,29 +33,21 @@ This is a composition of talks, Rob Norris and John De Goes
 What I'm presenting here are not really new ideas, just taking
 some existing ideas and composing them in a slightly new way
 
-Functional programming is programming with values.
-
 The problem with generic programming approaches is that serialized
 form becomes coupled to the type being represented, making it harder 
 to change data structures. Your serialized form is your public API; it
 needs to be stable and to have a controlled upgrade path.
+
+Dissatisfaction-Driven Design
 </div>
-
-Outline
--------
-
-* Build a library to solve the problem of JSON serialization
-* Look at what else we might use it for
-* Figure out how it's deficient
-* Generalize it with fancy types
 
 Prerequisites
 -------------
 
 * Terminology
-    * Sum Types / GADTs
-    * Product Types
-    * Applicative Functors
+    * Sum types / GADTs
+    * Product types
+    * Applicative functors
     * Higher-kinded types
     * Coproducts
 * Tools
@@ -142,7 +134,7 @@ case class Administrator(department: String) extends Role
 
 * Primitives
 * Sequences
-* Sum types
+* Records
 
 Example
 -------
@@ -164,8 +156,8 @@ case class Administrator(department: String) extends Role
 
 * Primitives
 * Sequences
-* Sum types
 * Records
+* Sum types
 
 Example JSON Representation
 ---------------------------
@@ -194,36 +186,23 @@ Example JSON Representation
 
 Example Schema
 --------------
- 
+
 ~~~scala
 val personSchema = rec(
   ^^(
     required("name", Prim.str, Person.name.asGetter),
-    required("birthDate", Prim.long, Getter.id[Long])).dimap(
-      (_: Person).birthDate.getMillis,
+    profTProp.dimap(required("birthDate", Prim.long, Getter.id[Long])) {
+      (_: Person).birthDate.getMillis
+    } {
       new Instant(_: Long)
-    ),
+    },
     required("roles", Prim.arr(roleSchema), Person.roles.asGetter)
   )(Person.apply _)
 )
 ~~~
 
-Example Schema
---------------
+To avoid type ascriptions, use all of @tpolecat's flags from [here]()
  
-~~~scala
-val personSchema = rec[Prim, Person](
-  ^^[TProp[Person, ?], String, Instant, Vector[Role], Person](
-    required("name", Prim.str, Person.name.asGetter),
-    required("birthDate", Prim.long, Getter.id[Long])).dimap(
-      (_: Person).birthDate.getMillis,
-      new Instant(_: Long)
-    ),
-    required("roles", Prim.arr(roleSchema), Person.roles.asGetter)
-  )(Person.apply _)
-)
-~~~
-
 Example Schema
 --------------
  
@@ -235,11 +214,12 @@ val roleSchema = Schema.oneOf(
     Role.user composeIso GenIso.unit[User.type]
   ) ::
   alt[Unit, Prim, Role, Administrator](
-    "admin", 
-    rec[Prim, Administrator](
-      required("department", Prim.str, Administrator.department.asGetter) map {
-        Administrator.apply _
-      }
+    "administrator", 
+    rec(
+      ^(
+        required("department", Prim.str, Administrator.department.asGetter),
+        required("subordinateCount", Prim.int, Administrator.subordinateCount.asGetter)
+      )(Administrator.apply _)
     ),
     Role.admin
   ) :: Nil
@@ -410,13 +390,31 @@ case class Person(
 
 ~~~scala
 def liftA2[A, B, C, F[_]: Applicative](fa: F[A], fb: F[B])(f: (A, B) => C): F[C]
+~~~
 
+Records
+-------
+
+~~~scala
+case class Person(
+  name: String, 
+  birthDate: Instant
+)
+~~~
+
+~~~scala
+def liftA2[A, B, C, F[_]: Applicative](fa: F[A], fb: F[B])(f: (A, B) => C): F[C]
+~~~
+
+~~~scala
 val personSchema: JSchema[Person] = liftA2(JStrT, JNumT) { Person.apply _ }
 ~~~
 
+<div class="notes">
 This looks like exactly the sort of thing that we need, but we immediately run
 into a problem if we try to write Applicative[JSchema]. We can't even make JSchema
 a functor!
+</div>
 
 Records
 -------
@@ -467,7 +465,9 @@ the name and the schema for a single property.
 
 ~~~scala
 case class JObjT[O](props: Props[O]) extends JSchema[O]
+~~~
 
+~~~scala
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
 
@@ -479,7 +479,9 @@ the name and the schema for a single property.
 
 ~~~scala
 case class JObjT[O](props: Props[O, O]) extends JSchema[O]
+~~~
 
+~~~scala
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
 
@@ -489,12 +491,12 @@ operations.
 ~~~scala
 sealed trait Props[O, A] 
 
-case class PureProps[O, A](a: A) extends Props[O, A]
-
 case class ApProps[O, A, B](
   prop: PropSchema[O, B], 
   rest: Props[O, B => A]
 ) extends Props[O, A]
+
+case class PureProps[O, A](a: A) extends Props[O, A]
 ~~~
 
 Records, Take 2
@@ -927,10 +929,19 @@ In order to define serialization in the presence of this new layer
 of abstraction, we're going to need a bit more machinery:
 
 ~~~scala
-sealed trait ToJson[S[_]] {
+trait ToJson[S[_]] {
   def serialize[A](schema: S[A], value: A): Json
 }
 
+trait FromJson[S[_]] {
+  def decoder[A](schema: S[A]): DecodeJson[A]
+}
+~~~
+
+Problem 1: Primitives
+---------------------
+
+~~~scala
 implicit def jSchemaToJson[P[_]: ToJson] = new ToJson[JSchema[P, ?]] {
   def serialize[A](schema: JSchema[P, A], value: A): Json = {
     schema match {
@@ -950,9 +961,6 @@ implicit val JsonPrimToJson = new ToJson[JsonPrim] {
   }
 }
 ~~~
-
-Problem 1: Primitives
----------------------
 
 Problem 1: Primitives
 ---------------------
