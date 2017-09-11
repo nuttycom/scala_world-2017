@@ -17,5 +17,8 @@ reveal: $(SOURCE) $(STYLE)
 	$(PANDOC) -t html5 --template=template-revealjs.html --standalone --section-divs --variable theme="beige" --variable transition="linear" slides.md -o slides.html
 	#$(PANDOC) -f markdown --smart -t revealjs -V theme=$(THEME) --include-in-header=$(STYLE) -s $(SOURCE) -o slides.html
 
-slidy:
+slidy: slides.md
 	$(PANDOC) -t slidy --standalone --section-divs --highlight-style pygments slides.md -o slides.slidy.html
+
+index: slidy
+	cp slides.slidy.html index.html
