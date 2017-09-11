@@ -60,7 +60,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   <p class="date">September, 2017</p>
 </div>
 <div id="goals" class="slide section level2">
-<h1>Goals</h1>
+<h2>Goals</h2>
 <ul>
 <li>Explore the design of an FP library from start to finish</li>
 <li>Introduce <strong>free applicative functors</strong> in the context of a &quot;real-world&quot; problem</li>
@@ -71,7 +71,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </ul>
 </div>
 <div id="prerequisites" class="slide section level2">
-<h1>Prerequisites</h1>
+<h2>Prerequisites</h2>
 <ul>
 <li>Sum types / GADTs</li>
 <li>Product types</li>
@@ -83,7 +83,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </ul>
 </div>
 <div id="overview" class="slide section level2">
-<h1>Overview</h1>
+<h2>Overview</h2>
 <div id="problem-serialization" class="section level3">
 <h3>Problem: Serialization</h3>
 <ul>
@@ -94,7 +94,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </div>
 </div>
 <div id="overview-1" class="slide section level2">
-<h1>Overview</h1>
+<h2>Overview</h2>
 <div id="problem-serialization-1" class="section level3">
 <h3>Problem: Serialization</h3>
 <ul>
@@ -113,7 +113,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </div>
 </div>
 <div id="example" class="slide section level2">
-<h1>Example</h1>
+<h2>Example</h2>
 <p>A simple sums-of-products data type.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -127,7 +127,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">final</span> <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role</code></pre></div>
 </div>
 <div id="example-1" class="slide section level2">
-<h1>Example</h1>
+<h2>Example</h2>
 <p>A simple sums-of-products data type.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -144,7 +144,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </ul>
 </div>
 <div id="example-2" class="slide section level2">
-<h1>Example</h1>
+<h2>Example</h2>
 <p>A simple sums-of-products data type.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -162,7 +162,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </ul>
 </div>
 <div id="example-3" class="slide section level2">
-<h1>Example</h1>
+<h2>Example</h2>
 <p>A simple sums-of-products data type.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -181,7 +181,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </ul>
 </div>
 <div id="example-4" class="slide section level2">
-<h1>Example</h1>
+<h2>Example</h2>
 <p>A simple sums-of-products data type.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -201,7 +201,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </ul>
 </div>
 <div id="example-json-representation" class="slide section level2">
-<h1>Example JSON Representation</h1>
+<h2>Example JSON Representation</h2>
 <div class="sourceCode"><pre class="sourceCode json"><code class="sourceCode json"><span class="fu">{</span>
   <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Kris Nuttycombe&quot;</span><span class="fu">,</span>
   <span class="dt">&quot;birthDate&quot;</span><span class="fu">:</span> <span class="dv">201470280000</span><span class="fu">,</span>
@@ -223,7 +223,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="fu">}</span></code></pre></div>
 </div>
 <div id="example-schema" class="slide section level2">
-<h1>Example Schema</h1>
+<h2>Example Schema</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> personSchema: Schema[Prim, Person] = <span class="fu">rec</span>(
   ^^(
     <span class="fu">required</span>(<span class="st">&quot;name&quot;</span>, Prim.<span class="fu">str</span>, Person.<span class="fu">name</span>.<span class="fu">asGetter</span>),
@@ -238,7 +238,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <p>To avoid type ascriptions, use all of <span class="citation">@tpolecat</span>'s flags from <a href="">here</a></p>
 </div>
 <div id="example-schema-1" class="slide section level2">
-<h1>Example Schema</h1>
+<h2>Example Schema</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> roleSchema: Schema[Prim, Role] = Schema.<span class="fu">oneOf</span>(
   alt[Unit, Prim, Role, Unit](
     <span class="st">&quot;user&quot;</span>, 
@@ -258,7 +258,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 )</code></pre></div>
 </div>
 <div id="primitives" class="slide section level2">
-<h1>Primitives</h1>
+<h2>Primitives</h2>
 <p>Use a GADT to describe the kinds of elements that can exist.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -267,7 +267,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">object</span> JStrT <span class="kw">extends</span> JSchema[String]</code></pre></div>
 </div>
 <div id="primitive-serialization" class="slide section level2">
-<h1>Primitive serialization</h1>
+<h2>Primitive serialization</h2>
 <p>Use a GADT to describe the kinds of elements that can exist.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -275,7 +275,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">object</span> JBoolT <span class="kw">extends</span> JSchema[Boolean]
 <span class="kw">case</span> <span class="kw">object</span> JStrT <span class="kw">extends</span> JSchema[String]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> argonaut.<span class="fu">Json</span>
-<span class="kw">import</span> argonaut.<span class="fu">Json</span>.<span class="fu">_</span>
+<span class="kw">import</span> argonaut.<span class="fu">Json</span>._
 
 <span class="kw">def</span> serialize[A](schema: JSchema[A], value: A): Json = {
   schema <span class="kw">match</span> {
@@ -287,7 +287,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="primitive-parsing" class="slide section level2">
-<h1>Primitive parsing</h1>
+<h2>Primitive parsing</h2>
 <p>Create a parser by generating a function between a schema and an <a href="http://argonaut.io">argonaut</a> DecodeJson instance.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -295,7 +295,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">object</span> JBoolT <span class="kw">extends</span> JSchema[Boolean]
 <span class="kw">case</span> <span class="kw">object</span> JStrT <span class="kw">extends</span> JSchema[String]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>
-<span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>.<span class="fu">_</span>
+<span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>._
 
 <span class="kw">def</span> decoder[A](schema: JSchema[A]): DecodeJson[A] = {
   schema <span class="kw">match</span> {
@@ -306,7 +306,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="primitive-parsing-1" class="slide section level2">
-<h1>Primitive parsing</h1>
+<h2>Primitive parsing</h2>
 <p>Create a parser by generating a function between a schema and an <a href="http://argonaut.io">argonaut</a> DecodeJson instance.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -314,7 +314,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">object</span> JBoolT <span class="kw">extends</span> JSchema[Boolean]
 <span class="kw">case</span> <span class="kw">object</span> JStrT <span class="kw">extends</span> JSchema[String]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>
-<span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>.<span class="fu">_</span>
+<span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>._
 
 
   <span class="kw">def</span> decoder[A](schema: JSchema[A]): DecodeJson[A] = {
@@ -326,7 +326,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   }</code></pre></div>
 </div>
 <div id="natural-transformations" class="slide section level2">
-<h1>Natural Transformations</h1>
+<h2>Natural Transformations</h2>
 <p>Create a parser by generating a <del>function</del> natural transformation between a schema and an <a href="http://argonaut.io">argonaut</a> DecodeJson instance.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -334,7 +334,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">object</span> JBoolT <span class="kw">extends</span> JSchema[Boolean]
 <span class="kw">case</span> <span class="kw">object</span> JStrT <span class="kw">extends</span> JSchema[String]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>
-<span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>.<span class="fu">_</span>
+<span class="kw">import</span> argonaut.<span class="fu">DecodeJson</span>._
 
 <span class="kw">val</span> decoder = <span class="kw">new</span> (JSchema ~&gt; DecodeJson) {
   <span class="kw">def</span> apply[A](schema: JSchema[A]): DecodeJson[A] = {
@@ -347,23 +347,23 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="natural-transformations-1" class="slide section level2">
-<h1>Natural Transformations</h1>
+<h2>Natural Transformations</h2>
 <p>With a little rearranging, we can also make serialization a natural transformation.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> serialize[A](schema: JSchema[A], value: A): Json</code></pre></div>
 </div>
 <div id="natural-transformations-2" class="slide section level2">
-<h1>Natural Transformations</h1>
+<h2>Natural Transformations</h2>
 <p>With a little rearranging, we can also make serialization a natural transformation.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> serialize[A](schema: JSchema[A]): A =&gt; Json</code></pre></div>
 </div>
 <div id="natural-transformations-3" class="slide section level2">
-<h1>Natural Transformations</h1>
+<h2>Natural Transformations</h2>
 <p>With a little rearranging, we can also make serialization a natural transformation.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> serialize[A](schema: JSchema[A]): A =&gt; Json</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
 </div>
 <div id="natural-transformations-4" class="slide section level2">
-<h1>Natural Transformations</h1>
+<h2>Natural Transformations</h2>
 <p>With a little rearranging, we can also make serialization a natural transformation.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> serialize[A](schema: JSchema[A]): A =&gt; Json</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
@@ -378,30 +378,30 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="natural-transformations-5" class="slide section level2">
-<h1>Natural Transformations</h1>
+<h2>Natural Transformations</h2>
 <p>When we're working at the level of descriptions of data, what we end up writing are natural transformations between our description and value-level functions.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> decoder: JSchema ~&gt; JsonDecoder</code></pre></div>
 </div>
 <div id="natural-transformations-6" class="slide section level2">
-<h1>Natural Transformations</h1>
+<h2>Natural Transformations</h2>
 <p>When we're working at the level of descriptions of data, what we end up writing are natural transformations between our description and value-level functions.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> decoder: JSchema ~&gt; (Json =&gt; Either[ParseError, ?])</code></pre></div>
 </div>
 <div id="sequences" class="slide section level2">
-<h1>Sequences</h1>
+<h2>Sequences</h2>
 <p>Sequences are simple to describe because the only thing you need to represent is the type of the element.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JVecT[A](elemType: JSchema[A]) <span class="kw">extends</span> JSchema[Vector[A]]</code></pre></div>
 </div>
 <div id="sequences-1" class="slide section level2">
-<h1>Sequences</h1>
+<h2>Sequences</h2>
 <p>Sequences are simple to describe because the only thing you need to represent is the type of the element.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JVecT[A](elemType: JSchema[A]) <span class="kw">extends</span> JSchema[Vector[A]]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> boolsSchema: JSchema[Vector[Boolean]] = <span class="fu">JVecT</span>(JBoolT)</code></pre></div>
 </div>
 <div id="sequence-serialization" class="slide section level2">
-<h1>Sequence serialization</h1>
+<h2>Sequence serialization</h2>
 <p>Sequences are simple to describe because the only thing you need to represent is the type of the element.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JVecT[A](elemType: JSchema[A]) <span class="kw">extends</span> JSchema[Vector[A]]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> boolsSchema: JSchema[Vector[Boolean]] = <span class="fu">JVecT</span>(JBoolT)</code></pre></div>
@@ -416,7 +416,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="sequence-parsing" class="slide section level2">
-<h1>Sequence parsing</h1>
+<h2>Sequence parsing</h2>
 <p>Sequences are simple to describe because the only thing you need to represent is the type of the element.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JVecT[A](elemType: JSchema[A]) <span class="kw">extends</span> JSchema[Vector[A]]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> boolsSchema: JSchema[Vector[Boolean]] = <span class="fu">JVecT</span>(JBoolT)</code></pre></div>
@@ -439,7 +439,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="records" class="slide section level2">
-<h1>Records</h1>
+<h2>Records</h2>
 <p>For records, however, we have to be able to relate schema for multiple values of different types.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -447,7 +447,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 )</code></pre></div>
 </div>
 <div id="records-1" class="slide section level2">
-<h1>Records</h1>
+<h2>Records</h2>
 <p>For records, however, we have to be able to relate schema for multiple values of different types.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -456,7 +456,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> liftA2[A, B, C, F[_]: Applicative](fa: F[A], fb: F[B])(f: (A, B) =&gt; C): F[C]</code></pre></div>
 </div>
 <div id="records-2" class="slide section level2">
-<h1>Records</h1>
+<h2>Records</h2>
 <p>For records, however, we have to be able to relate schema for multiple values of different types.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
   name: String, 
@@ -466,7 +466,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> personSchema: JSchema[Person] = <span class="fu">liftA2</span>(JStrT, JNumT) { Person.<span class="fu">apply</span> _ }</code></pre></div>
 </div>
 <div id="records-3" class="slide section level2">
-<h1>Records</h1>
+<h2>Records</h2>
 <p>So, how do we define Applicative for this data type?</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -477,7 +477,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> JVecT[A](elemType: JSchema[A]) <span class="kw">extends</span> JSchema[Vector[A]]</code></pre></div>
 </div>
 <div id="records-4" class="slide section level2">
-<h1>Records</h1>
+<h2>Records</h2>
 <p>So, how do we define Applicative for this data type?</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -494,19 +494,19 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <p><code>pure</code> and <code>map</code> don't make any sense!</p>
 </div>
 <div id="records-take-2" class="slide section level2">
-<h1>Records, Take 2</h1>
+<h2>Records, Take 2</h2>
 <p>We need an applicative functor, but maybe not for the whole schema type. What about just for the record (product) types?</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JObjT[A](props: Props[A]) <span class="kw">extends</span> JSchema[A]</code></pre></div>
 </div>
 <div id="records-take-2-1" class="slide section level2">
-<h1>Records, Take 2</h1>
+<h2>Records, Take 2</h2>
 <p>We need an applicative functor, but maybe not for the whole schema type. What about just for the record (product) types?</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JObjT[A](props: Props[A]) <span class="kw">extends</span> JSchema[A]</code></pre></div>
 <p>To define our record builder first define a class that captures the name and the schema for a single property.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O =&gt; A)</code></pre></div>
 </div>
 <div id="records-take-2-2" class="slide section level2">
-<h1>Records, Take 2</h1>
+<h2>Records, Take 2</h2>
 <p>We need an applicative functor, but maybe not for the whole schema type. What about just for the record (product) types?</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JObjT[A](props: Props[A, A]) <span class="kw">extends</span> JSchema[A]</code></pre></div>
 <p>To define our record builder first define a class that captures the name and the schema for a single property.</p>
@@ -523,7 +523,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="records-take-2-3" class="slide section level2">
-<h1>Records, Take 2</h1>
+<h2>Records, Take 2</h2>
 <p>Is it applicative? We can find out by implementing <code>ap</code>.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> applicative[O] = <span class="kw">new</span> Applicative[Props[O, ?]] {
   <span class="kw">def</span> point[A](a: =&gt; A): Props[O, A] = <span class="fu">PureProps</span>(a)
@@ -553,7 +553,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="records-take-2-4" class="slide section level2">
-<h1>Records, Take 2</h1>
+<h2>Records, Take 2</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> Props[O, A] 
 
 <span class="kw">case</span> <span class="kw">class</span> PureProps[O, A](a: A) <span class="kw">extends</span> Props[O, A]
@@ -568,7 +568,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="records-take-2-5" class="slide section level2">
-<h1>Records, Take 2</h1>
+<h2>Records, Take 2</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> Props[F[_, _], O, A] 
 
 <span class="kw">case</span> <span class="kw">class</span> PureProps[F[_, _], O, A](a: A) <span class="kw">extends</span> Props[F, O, A]
@@ -583,7 +583,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="records-take-2-6" class="slide section level2">
-<h1>Records, Take 2</h1>
+<h2>Records, Take 2</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> Props[F[_], A] 
 
 <span class="kw">case</span> <span class="kw">class</span> PureProps[F[_], A](a: A) <span class="kw">extends</span> Props[F, A]
@@ -597,7 +597,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O =&gt; A)</code></pre></div>
 </div>
 <div id="records-take-3" class="slide section level2">
-<h1>Records, Take 3</h1>
+<h2>Records, Take 3</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> FreeAp[F[_], A] 
 
 <span class="kw">case</span> <span class="kw">class</span> Pure[F[_], A](a: A) <span class="kw">extends</span> FreeAp[F, A]
@@ -611,7 +611,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O =&gt; A)</code></pre></div>
 </div>
 <div id="records-take-3-1" class="slide section level2">
-<h1>Records, Take 3</h1>
+<h2>Records, Take 3</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> scalaz.<span class="fu">FreeAp</span>
 
 <span class="kw">case</span> <span class="kw">class</span> JObjT[A](props: FreeAp[PropSchema[A, ?], A]) <span class="kw">extends</span> JSchema[A]
@@ -619,7 +619,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O =&gt; A)</code></pre></div>
 </div>
 <div id="record-serialization" class="slide section level2">
-<h1>Record serialization</h1>
+<h2>Record serialization</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer = <span class="kw">new</span> (JSchema ~&gt; (? =&gt; Json)) = {
   <span class="kw">def</span> apply[A](schema: JSchema[A]): A =&gt; Json = {
     schema <span class="kw">match</span> {
@@ -630,7 +630,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="record-serialization-1" class="slide section level2">
-<h1>Record serialization</h1>
+<h2>Record serialization</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer = <span class="kw">new</span> (JSchema ~&gt; (? =&gt; Json)) = {
   <span class="kw">def</span> apply[A](schema: JSchema[A]): A =&gt; Json = {
     schema <span class="kw">match</span> {
@@ -656,12 +656,12 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   }</code></pre></div>
 </div>
 <div id="record-decoding" class="slide section level2">
-<h1>Record decoding</h1>
+<h2>Record decoding</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala">  <span class="kw">def</span> decodeObj[A](rb: FreeAp[PropSchema[A, ?], A]): DecodeJson[A] = {
     <span class="kw">implicit</span> <span class="kw">val</span> djap: Applicative[DecodeJson] = <span class="kw">new</span> Applicative[DecodeJson] {
       <span class="kw">def</span> point[A](a: =&gt; A) = <span class="fu">DecodeJson</span>(_ =&gt; DecodeResult.<span class="fu">ok</span>(a))
       <span class="kw">def</span> ap[A, B](fa: =&gt; DecodeJson[A])(ff: =&gt; DecodeJson[A =&gt; B]): DecodeJson[B] = {
-        fa.<span class="fu">flatMap</span>(a =&gt; ff.<span class="fu">map</span>(<span class="fu">_</span>(a)))
+        fa.<span class="fu">flatMap</span>(a =&gt; ff.<span class="fu">map</span>(_(a)))
       }
     }
 
@@ -675,7 +675,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   }</code></pre></div>
 </div>
 <div id="sum-types" class="slide section level2">
-<h1>Sum types</h1>
+<h2>Sum types</h2>
 <p>We represent sum types as a list of alternatives.</p>
 <p>Each constructor of the sum type is associated with a value that maps from the arguments demanded by that constructor to a value of the sum type.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JSumT[A](alternatives: List[Alt[A, B] <span class="kw">forSome</span> { <span class="kw">type</span> B }]) <span class="kw">extends</span> JSchema[A]
@@ -683,7 +683,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> Alt[A, B](id: String, base: JSchema[B], review: B =&gt; A, preview: A =&gt; Option[B])</code></pre></div>
 </div>
 <div id="sum-types-1" class="slide section level2">
-<h1>Sum types</h1>
+<h2>Sum types</h2>
 <p>We represent sum types as a list of alternatives.</p>
 <p>Each constructor of the sum type is associated with a value that maps from the arguments demanded by that constructor to a value of the sum type.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JSumT[A](alternatives: List[Alt[A, B] <span class="kw">forSome</span> { <span class="kw">type</span> B }]) <span class="kw">extends</span> JSchema[A]
@@ -695,17 +695,17 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> Alt[A, B](id: String, base: JSchema[B], prism: Prism[A, B])</code></pre></div>
 </div>
 <div id="sum-types-2" class="slide section level2">
-<h1>Sum types</h1>
+<h2>Sum types</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JSumT[A](alternatives: List[Alt[A, B] <span class="kw">forSome</span> { <span class="kw">type</span> B }]) <span class="kw">extends</span> JSchema[A]
 
 <span class="kw">case</span> <span class="kw">class</span> Alt[A, B](id: String, base: JSchema[B], prism: Prism[A, B])</code></pre></div>
 </div>
 <div id="sum-types-3" class="slide section level2">
-<h1>Sum types</h1>
+<h2>Sum types</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JSumT[A](alternatives: List[Alt[A, B] <span class="kw">forSome</span> { <span class="kw">type</span> B }]) <span class="kw">extends</span> JSchema[A]
 
 <span class="kw">case</span> <span class="kw">class</span> Alt[A, B](id: String, base: JSchema[B], prism: Prism[A, B])</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> monocle.<span class="fu">macros</span>.<span class="fu">_</span>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> monocle.<span class="fu">macros</span>._
 
 <span class="kw">case</span> <span class="kw">object</span> User <span class="kw">extends</span> Role {
   <span class="kw">val</span> prism = GenPrism[Role, User.<span class="fu">type</span>]
@@ -720,11 +720,11 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 )</code></pre></div>
 </div>
 <div id="sum-types-4" class="slide section level2">
-<h1>Sum types</h1>
+<h2>Sum types</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JSumT[A](alternatives: List[Alt[A, B] <span class="kw">forSome</span> { <span class="kw">type</span> B }]) <span class="kw">extends</span> JSchema[A]
 
 <span class="kw">case</span> <span class="kw">class</span> Alt[A, B](id: String, base: JSchema[B], prism: Prism[A, B])</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> monocle.<span class="fu">macros</span>.<span class="fu">_</span>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> monocle.<span class="fu">macros</span>._
 
 <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role
 <span class="kw">object</span> Administrator {
@@ -742,11 +742,11 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 )</code></pre></div>
 </div>
 <div id="sum-types-5" class="slide section level2">
-<h1>Sum types</h1>
+<h2>Sum types</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> JSumT[A](alternatives: List[Alt[A, B] <span class="kw">forSome</span> { <span class="kw">type</span> B }]) <span class="kw">extends</span> JSchema[A]
 
 <span class="kw">case</span> <span class="kw">class</span> Alt[A, B](id: String, base: JSchema[B], prism: Prism[A, B])</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> monocle.<span class="fu">macros</span>.<span class="fu">_</span>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> monocle.<span class="fu">macros</span>._
 
 <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role
 <span class="kw">object</span> Administrator {
@@ -765,7 +765,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> roleSchema: JSchema[Role] = <span class="fu">JSumT</span>(userRoleAlt :: adminRoleAlt :: Nil)</code></pre></div>
 </div>
 <div id="sum-type-serialization" class="slide section level2">
-<h1>Sum type serialization</h1>
+<h2>Sum type serialization</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer = <span class="kw">new</span> (JSchema ~&gt; (? =&gt; Json)) = {
   <span class="kw">def</span> apply[A](schema: JSchema[A]): A =&gt; Json = {
     schema <span class="kw">match</span> {
@@ -783,7 +783,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="sum-type-parsing" class="slide section level2">
-<h1>Sum type parsing</h1>
+<h2>Sum type parsing</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> decoder = <span class="kw">new</span> (JSchema ~&gt; DecodeJson) {
   <span class="kw">def</span> apply[A](schema: JSchema[A]) = {
     schema <span class="kw">match</span> {
@@ -811,7 +811,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="what-else-can-we-do" class="slide section level2">
-<h1>What else can we do?</h1>
+<h2>What else can we do?</h2>
 <ul>
 <li>ScalaCheck <a href="https://github.com/rickynils/scalacheck/blob/master/src/main/scala/org/scalacheck/Gen.scala">Gen</a> instances</li>
 <li>Binary serialization using <a href="https://github.com/scodec/scodec">scodec</a></li>
@@ -821,7 +821,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="so...-whats-the-catch" class="slide section level2">
-<h1>So... what's the catch?</h1>
+<h2>So... what's the catch?</h2>
 <ul>
 <li>Fixed set of primitives is overly limiting</li>
 <li>Unable to provide additional metadata about values/fields without altering the schema algebra</li>
@@ -829,7 +829,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <p>So let's fix these things.</p>
 </div>
 <div id="problem-1-primitives" class="slide section level2">
-<h1>Problem 1: Primitives</h1>
+<h2>Problem 1: Primitives</h2>
 <p>We started off by defining schema for String, Long, and Boolean. This clearly isn't enough. For example, I want to be able to define a schema where date values, represented in JSON as strings, are first-class.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
@@ -845,7 +845,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> JObjT[A](props: FreeAp[PropSchema[A, ?], A]) <span class="kw">extends</span> JSchema[A]</code></pre></div>
 </div>
 <div id="problem-1-primitives-1" class="slide section level2">
-<h1>Problem 1: Primitives</h1>
+<h2>Problem 1: Primitives</h2>
 <p>We started off by defining schema for String, Long, and Boolean. This clearly isn't enough. For example, I want to be able to define a schema where date values, represented in JSON as strings, are first-class.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[P[_], A]
 
@@ -861,7 +861,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> JObjT[P[_], A](props: FreeAp[PropSchema[P, A, ?], A]) <span class="kw">extends</span> JSchema[P, A]</code></pre></div>
 </div>
 <div id="problem-1-primitives-2" class="slide section level2">
-<h1>Problem 1: Primitives</h1>
+<h2>Problem 1: Primitives</h2>
 <p>Then, we define a separate GADT just defining the primitive types we're interested in.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JsonPrim[A]
 <span class="kw">case</span> <span class="kw">object</span> JStrT <span class="kw">extends</span> JsonPrim[String]
@@ -870,7 +870,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">object</span> JDateT <span class="kw">extends</span> JsonPrim[DateTime]</code></pre></div>
 </div>
 <div id="problem-1-primitives-3" class="slide section level2">
-<h1>Problem 1: Primitives</h1>
+<h2>Problem 1: Primitives</h2>
 <p>Then, we define a separate GADT just defining the primitive types we're interested in.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JsonPrim[A]
 <span class="kw">case</span> <span class="kw">object</span> JStrT <span class="kw">extends</span> JsonPrim[String]
@@ -882,7 +882,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">type</span> MySchema[A] = JSchema[JsonPrim, A]</code></pre></div>
 </div>
 <div id="problem-1-primitives-4" class="slide section level2">
-<h1>Problem 1: Primitives</h1>
+<h2>Problem 1: Primitives</h2>
 <p>In order to define serialization in the presence of this new layer of abstraction, we're going to need a bit more machinery:</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">trait</span> ToJson[S[_]] {
   <span class="kw">def</span> serializer: S ~&gt; (? =&gt; Json)
@@ -893,7 +893,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="problem-1-primitives-5" class="slide section level2">
-<h1>Problem 1: Primitives</h1>
+<h2>Problem 1: Primitives</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">implicit</span> <span class="kw">def</span> jSchemaToJson[P[_]: ToJson] = <span class="kw">new</span> ToJson[JSchema[P, ?]] {
   <span class="kw">val</span> serializer = <span class="kw">new</span> (JSchema[P, ?] ~&gt; (? =&gt; Json)) {
     <span class="kw">def</span> apply[A](schema: JSchema[P, A]): A =&gt; Json = {
@@ -920,7 +920,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="problem-1-primitives-6" class="slide section level2">
-<h1>Problem 1: Primitives</h1>
+<h2>Problem 1: Primitives</h2>
 <p>Having done this, we get an added bonus: We can use coproducts to compose sets of primitives!</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">implicit</span> <span class="kw">def</span> primCoToJson[P[_]: ToJson, Q[_]: ToJson] = <span class="kw">new</span> ToJson[Coproduct[P, Q, ?]] {
   <span class="kw">val</span> serializer = <span class="kw">new</span> (Coproduct[P, Q, ?] ~&gt; (A =&gt; Json)) {
@@ -945,12 +945,12 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="either-and-coproduct" class="slide section level2">
-<h1>Either and Coproduct</h1>
+<h2>Either and Coproduct</h2>
 <p><code>Either[A, B]</code> allows you to take two sum types and create a new sum type whose inhabitants are the union of the inhabitants of <code>A</code> and the inhabitants of <code>B</code>.</p>
 <p><code>Coproduct[F[_], G[_]]</code> allows you to take two <strong>descriptions</strong> of types and create a new <strong>description</strong> which can describe values using either of the nested descriptions.</p>
 </div>
 <div id="problem-2-annotations" class="slide section level2">
-<h1>Problem 2: Annotations</h1>
+<h2>Problem 2: Annotations</h2>
 <ul>
 <li>Nodes of the JSchema tree don't currently contain enough information to generate interesting json-schema.
 <ul>
@@ -964,7 +964,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </ul>
 </div>
 <div id="problem-2-annotations-1" class="slide section level2">
-<h1>Problem 2: Annotations</h1>
+<h2>Problem 2: Annotations</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JPrimT[P[_], I](prim: P[I]) <span class="kw">extends</span> JSchema[P, I]
@@ -976,7 +976,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">case</span> <span class="kw">class</span> JObjT[P[_], I](props: FreeAp[PropSchema[P, I, ?], I]) <span class="kw">extends</span> JSchema[P, I]</code></pre></div>
 </div>
 <div id="problem-2-annotations-2" class="slide section level2">
-<h1>Problem 2: Annotations</h1>
+<h2>Problem 2: Annotations</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A, P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JPrimT[A, P[_], I](ann: A, prim: P[I]) <span class="kw">extends</span> JSchema[A, P, I]
@@ -989,21 +989,21 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <p>This is a bit messy and involves a bunch of redundancy. It will work; it just doesn't seem ideal.</p>
 </div>
 <div id="directly-recusive-data" class="slide section level2">
-<h1>Directly recusive data</h1>
+<h2>Directly recusive data</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">class</span> <span class="fu">Prof</span>(
   name: String,
   students: List[Prof]
 )</code></pre></div>
 </div>
 <div id="no-longer-directly-recusive-data" class="slide section level2">
-<h1>No longer directly recusive data</h1>
+<h2>No longer directly recusive data</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">class</span> ProfF[S](
   name: String,
   students: List[S]
 )</code></pre></div>
 </div>
 <div id="reintroducing-recursion-with-fix" class="slide section level2">
-<h1>Reintroducing recursion with Fix</h1>
+<h2>Reintroducing recursion with Fix</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">class</span> ProfF[S](
   name: String,
   students: List[S]
@@ -1013,7 +1013,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <span class="kw">type</span> Prof = Fix[ProfF]</code></pre></div>
 </div>
 <div id="annotating-a-tree-with-cofree" class="slide section level2">
-<h1>Annotating a tree with Cofree</h1>
+<h2>Annotating a tree with Cofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">class</span> ProfF[S](
   name: String,
   students: List[S]
@@ -1027,7 +1027,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <p>Hat tip to Rob Norris, go watch his talk <a href="https://www.youtube.com/watch?v=7xSfLPD6tiQ">here</a></p>
 </div>
 <div id="annotating-a-tree-with-cofree-1" class="slide section level2">
-<h1>Annotating a tree with Cofree</h1>
+<h2>Annotating a tree with Cofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[S, P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JVecT[S, P[_], I](elemType: S) <span class="kw">extends</span> JSchema[S, P, Vector[I]]</code></pre></div>
@@ -1035,20 +1035,20 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 </div>
 <div id="annotating-a-tree-with-cofree-hcofree" class="slide section level2">
-<h1>Annotating a tree with <del>Cofree</del> HCofree</h1>
+<h2>Annotating a tree with <del>Cofree</del> HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[F[_], P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JVecT[F[_], P[_], I](elemType: F[I]) <span class="kw">extends</span> JSchema[F, P, Vector[I]]</code></pre></div>
 </div>
 <div id="annotating-a-tree-with-cofree-hcofree-1" class="slide section level2">
-<h1>Annotating a tree with <del>Cofree</del> HCofree</h1>
+<h2>Annotating a tree with <del>Cofree</del> HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[F[_], P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JVecT[F[_], P[_], I](elemType: F[I]) <span class="kw">extends</span> JSchema[F, P, Vector[I]]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])</code></pre></div>
 </div>
 <div id="annotating-a-tree-with-cofree-hcofree-2" class="slide section level2">
-<h1>Annotating a tree with <del>Cofree</del> HCofree</h1>
+<h2>Annotating a tree with <del>Cofree</del> HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[F[_], P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JVecT[F[_], P[_], I](elemType: F[I]) <span class="kw">extends</span> JSchema[F, P, Vector[I]]</code></pre></div>
@@ -1056,7 +1056,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[JSchema[?[_], P, ?]]</code></pre></div>
 </div>
 <div id="annotating-a-tree-with-cofree-hcofree-3" class="slide section level2">
-<h1>Annotating a tree with <del>Cofree</del> HCofree</h1>
+<h2>Annotating a tree with <del>Cofree</del> HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[F[_], P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JVecT[F[_], P[_], I](elemType: F[I]) <span class="kw">extends</span> JSchema[F, P, Vector[I]]</code></pre></div>
@@ -1066,7 +1066,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
 </div>
 <div id="annotating-a-tree-with-cofree-hcofree-4" class="slide section level2">
-<h1>Annotating a tree with <del>Cofree</del> HCofree</h1>
+<h2>Annotating a tree with <del>Cofree</del> HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[F[_], P[_], I]
 
 <span class="kw">case</span> <span class="kw">class</span> JVecT[F[_], P[_], I](elemType: F[I]) <span class="kw">extends</span> JSchema[F, P, Vector[I]]</code></pre></div>
@@ -1077,7 +1077,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> AnnSchema[P[_], A] = HCofree[A, JSchema[?[_], P, ?]]</code></pre></div>
 </div>
 <div id="rewriting-our-interpreters" class="slide section level2">
-<h1>Rewriting our interpreters</h1>
+<h2>Rewriting our interpreters</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[JSchema[?[_], P, ?]]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">implicit</span> <span class="kw">def</span> jSchemaToJson[P[_]: ToJson] = <span class="kw">new</span> ToJson[Schema[P, ?]] {
   <span class="kw">val</span> serializer = <span class="kw">new</span> (Schema[P, ?] ~&gt; (? =&gt; Json)) = {
@@ -1098,27 +1098,27 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="hfix-and-hcofree" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
 </div>
 <div id="hfix-and-hcofree-1" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> forget[A, F[_[_], _], I](c: HCofree[A, F, I]): HFix[F, I]</code></pre></div>
 </div>
 <div id="hfix-and-hcofree-2" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> forget[A, F[_[_], _]]: (HCofree[A, F, ?] ~&gt; HFix[F, ?])</code></pre></div>
 </div>
 <div id="hfix-and-hcofree-3" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
@@ -1130,7 +1130,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   }</code></pre></div>
 </div>
 <div id="hfix-and-hcofree-4" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
@@ -1143,7 +1143,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="hfix-and-hcofree-5" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
@@ -1159,14 +1159,14 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="hfix-and-hcofree-6" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="kw">case</span> <span class="kw">class</span> HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">final</span> <span class="kw">case</span> <span class="kw">class</span> HEnvT[A, F[_[_], _], G[_], I](a: A, fg: F[G, I])</code></pre></div>
 </div>
 <div id="hfix-and-hcofree-7" class="slide section level2">
-<h1>HFix and HCofree</h1>
+<h2>HFix and HCofree</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <span class="co">//case class HCofree[A, F[_[_], _], I](a: A, uncf: F[HCofree[A, F, ?], I])</span></code></pre></div>
@@ -1174,7 +1174,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> HCofree[A, F[_[_], _], I] = HFix[HEnvT[A, F, ?[_], ?], I]</code></pre></div>
 </div>
 <div id="working-with-fixpoint-trees" class="slide section level2">
-<h1>Working with fixpoint trees</h1>
+<h2>Working with fixpoint trees</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> HAlgebra[F[_[_], _], G[_]] = F[G, ?] ~&gt; G</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> cata[F[_[_], _]: HFunctor, G[_]](alg: HAlgebra[F, G]): (HFix[F, ?] ~&gt; G) = 
   <span class="kw">new</span> (HFix[F, ?] ~&gt; G) { self =&gt; 
@@ -1184,7 +1184,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   }</code></pre></div>
 </div>
 <div id="working-with-fixpoint-trees-1" class="slide section level2">
-<h1>Working with fixpoint trees</h1>
+<h2>Working with fixpoint trees</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> HAlgebra[F[_[_], _], G[_]] = F[G, ?] ~&gt; G</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> cata[F[_[_], _]: HFunctor, G[_]](alg: HAlgebra[F, G]): (HFix[F, ?] ~&gt; G) = 
   <span class="kw">new</span> (HFix[F, ?] ~&gt; G) { self =&gt; 
@@ -1199,7 +1199,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 }</code></pre></div>
 </div>
 <div id="working-with-fixpoint-trees-2" class="slide section level2">
-<h1>Working with fixpoint trees</h1>
+<h2>Working with fixpoint trees</h2>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> HAlgebra[F[_[_], _], G[_]] = F[G, ?] ~&gt; G</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> cata[F[_[_], _]: HFunctor, G[_]](alg: HAlgebra[F, G]): (HFix[F, ?] ~&gt; G) = 
   <span class="kw">new</span> (HFix[F, ?] ~&gt; G) { self =&gt; 
@@ -1216,7 +1216,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   <span class="fu">cata</span>(forgetAlg)</code></pre></div>
 </div>
 <div id="drawbacks" class="slide section level2">
-<h1>Drawbacks</h1>
+<h2>Drawbacks</h2>
 <p>The Scala compiler hates me.</p>
 <pre><code>[error] /Users/nuttycom/personal/scala_world-2017/sample_code/xenomorph/src/main/scala/xenomorph/Schema.scala:263: type mismatch;
 [error]  found   : [γ$13$]xenomorph.PropSchema[O,[γ$40$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$40$],γ$13$] ~&gt; [γ$14$]xenomorph.PropSchema[N,[γ$40$]xenomorph.HCofree[[β$0$[_$1], γ$1$]xenomorph.SchemaF[P,β$0$,γ$1$],A,γ$40$],γ$14$]
@@ -1227,7 +1227,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <p>That's the result of leaving off a type ascription, there's actually nothing incorrect about the code.</p>
 </div>
 <div id="conclusion" class="slide section level2">
-<h1>Conclusion</h1>
+<h2>Conclusion</h2>
 <p>When we're working at kind <code>*</code>, we're dealing with data.</p>
 <p>When we're working at kind <code>* -&gt; *</code> we're dealing with descriptions of data.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala">A =&gt; B
@@ -1235,7 +1235,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 F[_] ~&gt; G[_]</code></pre></div>
 </div>
 <div id="conclusion-1" class="slide section level2">
-<h1>Conclusion</h1>
+<h2>Conclusion</h2>
 <p>When we're working at kind <code>*</code>, we're dealing with data.</p>
 <p>When we're working at kind <code>* -&gt; *</code> we're dealing with <strong>descriptions</strong> of data.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala">A =&gt; B
@@ -1246,7 +1246,7 @@ F[_] ~&gt; G[_]</code></pre></div>
 Coproduct[F[_], G[_]]</code></pre></div>
 </div>
 <div id="conclusion-2" class="slide section level2">
-<h1>Conclusion</h1>
+<h2>Conclusion</h2>
 <p>When we're working at kind <code>*</code>, we're dealing with data.</p>
 <p>When we're working at kind <code>* -&gt; *</code> we're dealing with <strong>descriptions</strong> of data.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala">A =&gt; B
