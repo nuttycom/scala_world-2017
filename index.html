@@ -91,24 +91,13 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <li>Problems exist with macros/generic programming approaches.</li>
 <li>Legacy wire formats &amp; evolving protocols can present challenges.</li>
 </ul>
-</div>
-</div>
-<div id="overview-1" class="slide section level2">
-<h2>Overview</h2>
-<div id="problem-serialization-1" class="section level3">
-<h3>Problem: Serialization</h3>
-<ul>
-<li>Having to maintain both serializers and deserializers is silly.</li>
-<li>Problems exist with macros/generic programming approaches.</li>
-<li>Legacy wire formats &amp; evolving protocols can present challenges.</li>
-</ul>
-</div>
-<div id="solution" class="section level3">
-<h3>Solution:</h3>
+<div class="incremental">
+<h3 id="solution">Solution:</h3>
 <ul>
 <li>Build a description of the data structure as a value.</li>
 <li>Build interpreters for that description that produce serializers, deserializers, and more.</li>
 </ul>
+</div>
 
 </div>
 </div>
@@ -125,80 +114,26 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 
 <span class="kw">case</span> <span class="kw">object</span> User <span class="kw">extends</span> Role
 <span class="kw">final</span> <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role</code></pre></div>
-</div>
-<div id="example-1" class="slide section level2">
-<h2>Example</h2>
-<p>A simple sums-of-products data type.</p>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-<span class="kw">sealed</span> <span class="kw">trait</span> Role
-
-<span class="kw">case</span> <span class="kw">object</span> User <span class="kw">extends</span> Role
-<span class="kw">final</span> <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role</code></pre></div>
+<div class="incremental">
 <ul>
 <li>Primitives</li>
 </ul>
 </div>
-<div id="example-2" class="slide section level2">
-<h2>Example</h2>
-<p>A simple sums-of-products data type.</p>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-<span class="kw">sealed</span> <span class="kw">trait</span> Role
-
-<span class="kw">case</span> <span class="kw">object</span> User <span class="kw">extends</span> Role
-<span class="kw">final</span> <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role</code></pre></div>
+<div class="incremental">
 <ul>
-<li>Primitives</li>
 <li>Sequences</li>
 </ul>
 </div>
-<div id="example-3" class="slide section level2">
-<h2>Example</h2>
-<p>A simple sums-of-products data type.</p>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-<span class="kw">sealed</span> <span class="kw">trait</span> Role
-
-<span class="kw">case</span> <span class="kw">object</span> User <span class="kw">extends</span> Role
-<span class="kw">final</span> <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role</code></pre></div>
+<div class="incremental">
 <ul>
-<li>Primitives</li>
-<li>Sequences</li>
 <li>Records</li>
 </ul>
 </div>
-<div id="example-4" class="slide section level2">
-<h2>Example</h2>
-<p>A simple sums-of-products data type.</p>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> <span class="fu">Person</span>(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-<span class="kw">sealed</span> <span class="kw">trait</span> Role
-
-<span class="kw">case</span> <span class="kw">object</span> User <span class="kw">extends</span> Role
-<span class="kw">final</span> <span class="kw">case</span> <span class="kw">class</span> <span class="fu">Administrator</span>(department: String) <span class="kw">extends</span> Role</code></pre></div>
+<div class="incremental">
 <ul>
-<li>Primitives</li>
-<li>Sequences</li>
-<li>Records</li>
 <li>Sum types</li>
 </ul>
+</div>
 </div>
 <div id="example-json-representation" class="slide section level2">
 <h2>Example JSON Representation</h2>
@@ -355,18 +290,10 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <h2>Natural Transformations</h2>
 <p>With a little rearranging, we can also make serialization a natural transformation.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> serialize[A](schema: JSchema[A]): A =&gt; Json</code></pre></div>
-</div>
-<div id="natural-transformations-3" class="slide section level2">
-<h2>Natural Transformations</h2>
-<p>With a little rearranging, we can also make serialization a natural transformation.</p>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> serialize[A](schema: JSchema[A]): A =&gt; Json</code></pre></div>
+<div class="incremental">
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
 </div>
-<div id="natural-transformations-4" class="slide section level2">
-<h2>Natural Transformations</h2>
-<p>With a little rearranging, we can also make serialization a natural transformation.</p>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> serialize[A](schema: JSchema[A]): A =&gt; Json</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
+<div class="incremental">
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer = <span class="kw">new</span> (JSchema ~&gt; (? =&gt; Json)) {
   <span class="kw">def</span> apply[A](schema: JSchema[A]): A =&gt; Json = {
     schema <span class="kw">match</span> {
@@ -377,13 +304,14 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
   }
 }</code></pre></div>
 </div>
-<div id="natural-transformations-5" class="slide section level2">
+</div>
+<div id="natural-transformations-3" class="slide section level2">
 <h2>Natural Transformations</h2>
 <p>When we're working at the level of descriptions of data, what we end up writing are natural transformations between our description and value-level functions.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> decoder: JSchema ~&gt; JsonDecoder</code></pre></div>
 </div>
-<div id="natural-transformations-6" class="slide section level2">
+<div id="natural-transformations-4" class="slide section level2">
 <h2>Natural Transformations</h2>
 <p>When we're working at the level of descriptions of data, what we end up writing are natural transformations between our description and value-level functions.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> serializer: JSchema ~&gt; (? =&gt; Json)</code></pre></div>
