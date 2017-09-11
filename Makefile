@@ -18,8 +18,7 @@ reveal: $(SOURCE) $(STYLE)
 	#$(PANDOC) -f markdown --smart -t revealjs -V theme=$(THEME) --include-in-header=$(STYLE) -s $(SOURCE) -o slides.html
 
 slidy: slides.md
-	$(PANDOC) -t slidy --standalone --section-divs --highlight-style pygments slides.md -o slides.slidy.html
-	#$(PANDOC) -t slidy --standalone --section-divs --highlight-style pygments --variable slidy-url=./slidy slides.md -o slides.slidy.html
+	$(PANDOC) -t slidy --standalone --section-divs --highlight-style pygments --variable slidy-url=./slidy slides.md -o slides.slidy.html
 
 index: slidy
 	cp slides.slidy.html index.html
