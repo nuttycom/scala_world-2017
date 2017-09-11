@@ -32,21 +32,13 @@ Overview
 * Problems exist with macros/generic programming approaches.
 * Legacy wire formats & evolving protocols can present challenges.
 
-
-Overview
---------
-
-### Problem: Serialization
-
-* Having to maintain both serializers and deserializers is silly.
-* Problems exist with macros/generic programming approaches.
-* Legacy wire formats & evolving protocols can present challenges.
-
+<div class="incremental">
 ### Solution:
 
 * Build a description of the data structure as a value. 
 * Build interpreters for that description that produce serializers, 
   deserializers, and more.
+</div>
 
 <div class="notes">
 This is a composition of talks, Rob Norris and John De Goes
@@ -80,91 +72,18 @@ case object User extends Role
 final case class Administrator(department: String) extends Role
 ~~~
 
-Example
--------
-
-A simple sums-of-products data type.
-
-~~~scala
-case class Person(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-sealed trait Role
-
-case object User extends Role
-final case class Administrator(department: String) extends Role
-~~~
-
+<div class="incremental">
 * Primitives
-
-Example
--------
-
-A simple sums-of-products data type.
-
-~~~scala
-case class Person(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-sealed trait Role
-
-case object User extends Role
-final case class Administrator(department: String) extends Role
-~~~
-
-* Primitives
+</div>
+<div class="incremental">
 * Sequences
-
-Example
--------
-
-A simple sums-of-products data type.
-
-~~~scala
-case class Person(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-sealed trait Role
-
-case object User extends Role
-final case class Administrator(department: String) extends Role
-~~~
-
-* Primitives
-* Sequences
+</div>
+<div class="incremental">
 * Records
-
-Example
--------
-
-A simple sums-of-products data type.
-
-~~~scala
-case class Person(
-  name: String, 
-  birthDate: Instant,
-  roles: Vector[Role]
-)
-
-sealed trait Role
-
-case object User extends Role
-final case class Administrator(department: String) extends Role
-~~~
-
-* Primitives
-* Sequences
-* Records
+</div>
+<div class="incremental">
 * Sum types
+</div>
 
 Example JSON Representation
 ---------------------------
@@ -380,32 +299,13 @@ With a little rearranging, we can also make serialization a natural transformati
 def serialize[A](schema: JSchema[A]): A => Json
 ~~~
 
-Natural Transformations
------------------------
-
-With a little rearranging, we can also make serialization a natural transformation.
-
-~~~scala
-def serialize[A](schema: JSchema[A]): A => Json
-~~~
-
+<div class="incremental">
 ~~~scala
 val serializer: JSchema ~> (? => Json)
 ~~~
+</div>
 
-Natural Transformations
------------------------
-
-With a little rearranging, we can also make serialization a natural transformation.
-
-~~~scala
-def serialize[A](schema: JSchema[A]): A => Json
-~~~
-
-~~~scala
-val serializer: JSchema ~> (? => Json)
-~~~
-
+<div class="incremental">
 ~~~scala
 val serializer = new (JSchema ~> (? => Json)) {
   def apply[A](schema: JSchema[A]): A => Json = {
@@ -417,6 +317,7 @@ val serializer = new (JSchema ~> (? => Json)) {
   }
 }
 ~~~
+</div>
 
 Natural Transformations
 -----------------------
