@@ -2,8 +2,7 @@
 % Kris Nuttycombe (@nuttycom)
 % September, 2017
 
-Goals
------
+# Goals
 
 * Explore the design of an FP library from start to finish
 * Introduce **free applicative functors** 
@@ -12,8 +11,7 @@ Goals
 * Talk about the [**xenomorph**](https://github.com/nuttycom/xenomorph) library
 * Discover how what we write at kind `* -> *` is related to what we write at kind `*`
 
-Prerequisites
--------------
+# Prerequisites
 
 * Sum types / GADTs
 * Product types
@@ -23,17 +21,16 @@ Prerequisites
 * Natural transformations
 * Coproducts
 
-Overview
---------
+# Overview
 
-### Problem: Serialization
+## Problem: Serialization
 
 * Having to maintain both serializers and deserializers is silly.
 * Problems exist with macros/generic programming approaches.
 * Legacy wire formats & evolving protocols can present challenges.
 
 <div class="incremental"><div>
-### Solution:
+## Solution:
 
 * Build a description of the data structure as a value. 
 * Build interpreters for that description that produce serializers, 
@@ -54,8 +51,7 @@ needs to be stable and to have a controlled upgrade path.
 Dissatisfaction-Driven Design
 </div>
 
-Example
--------
+# Example
 
 A simple sums-of-products data type.
 
@@ -85,8 +81,7 @@ final case class Administrator(department: String, subordinateCount: Long) exten
 * Sum types
 </div>
 
-Example JSON Representation
----------------------------
+# Example JSON Representation
 
 ~~~json
 {
@@ -115,8 +110,7 @@ Example JSON Representation
 }
 ~~~
 
-Example Schema
---------------
+# Example Schema
 
 ~~~scala
 val personSchema: Schema[Prim, Person] = rec(
@@ -132,8 +126,7 @@ val isoLongInstant = Iso(new Instant(_:Long))((_:Instant).getMillis)
 
 To avoid type ascriptions, use all of [\@tpolecat](https://twitter.com/tpolecat)'s flags from [here](http://tpolecat.github.io/2017/04/25/scalac-flags.html)
  
-Example Schema
---------------
+# Example Schema
  
 ~~~scala
 val roleSchema: Schema[Prim, Role] = Schema.oneOf(
@@ -155,8 +148,7 @@ val roleSchema: Schema[Prim, Role] = Schema.oneOf(
 )
 ~~~
 
-Primitives
-----------
+# Primitives
 
 Use a GADT to describe the kinds of elements that can exist.
 
@@ -168,8 +160,7 @@ case object JBoolT extends JSchema[Boolean]
 case object JStrT extends JSchema[String]
 ~~~
 
-Primitive Serialization
------------------------
+# Primitive Serialization
 
 Use a GADT to describe the kinds of elements that can exist.
 
@@ -201,8 +192,7 @@ We can write a serializer that can render any type for which we
 have a schema to JSON.
 </div>
 
-Primitive Parsing
------------------
+# Primitive Parsing
 
 Create a parser by generating a function between
 a schema and an [argonaut](http://argonaut.io) DecodeJson instance.
@@ -230,8 +220,7 @@ def decoder[A](schema: JSchema[A]): DecodeJson[A] = {
  
 ~~~
 
-Primitive Parsing
------------------
+# Primitive Parsing
 
 Create a parser by generating a function between
 a schema and an [argonaut](http://argonaut.io) DecodeJson instance.
@@ -259,8 +248,7 @@ import argonaut.DecodeJson._
   
 ~~~
 
-Primitive Parsing
------------------
+# Primitive Parsing
 
 Create a parser by generating a ~~function~~ natural transformation between
 a schema and an [argonaut](http://argonaut.io) DecodeJson instance.
@@ -288,8 +276,7 @@ val decoder = new (JSchema ~> DecodeJson) {
 }
 ~~~
 
-Natural Transformations
------------------------
+# Natural Transformations
 
 With a little rearranging, we can also make serialization a natural transformation.
 
@@ -297,8 +284,7 @@ With a little rearranging, we can also make serialization a natural transformati
 def serialize[A](schema: JSchema[A], value: A): Json
 ~~~
 
-Natural Transformations
------------------------
+# Natural Transformations
 
 With a little rearranging, we can also make serialization a natural transformation.
 
@@ -326,8 +312,7 @@ val serializer = new (JSchema ~> (? => Json)) {
 ~~~
 </div>
 
-Natural Transformations
------------------------
+# Natural Transformations
 
 When we're working at the level of descriptions of data,
 what we end up writing are natural transformations 
@@ -341,8 +326,7 @@ val serializer: JSchema ~> (? => Json)
 val decoder: JSchema ~> JsonDecoder
 ~~~
 
-Natural Transformations
------------------------
+# Natural Transformations
 
 When we're working at the level of descriptions of data,
 what we end up writing are natural transformations 
@@ -356,8 +340,7 @@ val serializer: JSchema ~> (? => Json)
 val decoder: JSchema ~> (Json => Either[ParseError, ?])
 ~~~
 
-Sequences
----------
+# Sequences
 
 Sequences are simple to describe because the only thing you need to represent
 is the type of the element. 
@@ -386,8 +369,7 @@ val serializer = new (JSchema ~> (? => Json)) = {
 ~~~
 </div>
 
-Sequence Parsing
------------------
+# Sequence Parsing
 
 Sequences are simple to describe because the only thing you need to represent
 is the type of the element. 
@@ -412,8 +394,7 @@ val decoder = new (JSchema ~> DecodeJson) {
 }
 ~~~
 
-Records
--------
+# Records
 
 For records, however, we have to be able to relate schema for
 multiple values of different types.
@@ -437,8 +418,7 @@ val personSchema: JSchema[Person] = liftA2(JStrT, JNumT) { Person.apply _ }
 ~~~
 </div>
 
-Records
--------
+# Records
 
 So, how do we define Applicative for this data type?
 
@@ -464,8 +444,7 @@ trait Applicative[F[_]] {
 `pure` and `map` don't make any sense!
 </div>
 
-Records, Take 2
----------------
+# Records, Take 2
 
 We need an applicative functor, but maybe not for the whole schema type.
 What about just for the record (product) types?
@@ -506,8 +485,7 @@ constructor.
 </div>
 
 
-Records, Take 2
----------------
+# Records, Take 2
 
 Is it applicative? We can find out by implementing `ap`.
 
@@ -540,8 +518,7 @@ So, is this thing applicative? Well, the easiest way to find out is to go ahead 
 see if you can just implement the Applicative typeclass in a way that makes sense.
 </div>
 
-Records, Take 2
----------------
+# Records, Take 2
 ~~~scala
 sealed trait Props[O, A] 
 
@@ -565,8 +542,7 @@ add a bit of abstraction here by making the PropSchema constructor a type variab
 instead.
 </div>
 
-Records, Take 2
----------------
+# Records, Take 2
 
 ~~~scala
 sealed trait Props[F[_, _], O, A] 
@@ -589,8 +565,7 @@ case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor
 That `O` looks kind of superfluous.
 </div>
 
-Records, Take 2
----------------
+# Records, Take 2
 
 ~~~scala
 sealed trait Props[F[_], A] 
@@ -609,8 +584,7 @@ case class JObjT[A](props: Props[PropSchema[A, ?], A]) extends JSchema[A]
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
 
-Records, Take 3
----------------
+# Records, Take 3
 
 ~~~scala
 sealed trait FreeAp[F[_], A] 
@@ -629,8 +603,7 @@ case class JObjT[A](props: FreeAp[PropSchema[A, ?], A]) extends JSchema[A]
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
 
-Records, Take 3
----------------
+# Records, Take 3
 
 ~~~scala
 import scalaz.FreeAp
@@ -640,8 +613,7 @@ case class JObjT[A](props: FreeAp[PropSchema[A, ?], A]) extends JSchema[A]
 case class PropSchema[O, A](fieldName: String, valueSchema: JSchema[A], accessor: O => A)
 ~~~
 
-Record serialization
---------------------
+# Record serialization
 
 ~~~scala
   def serializeObj[A](rb: FreeAp[PropSchema[A, ?], A], value: A): Json = {
@@ -673,8 +645,7 @@ val serializer = new (JSchema ~> (? => Json)) = {
 ~~~
 </div>
 
-Record decoding
----------------
+# Record decoding
 
 ~~~scala
   def decodeObj[A](rb: FreeAp[PropSchema[A, ?], A]): DecodeJson[A] = {
@@ -708,8 +679,7 @@ val decoder = new (JSchema ~> DecodeJson) {
 ~~~
 </div>
 
-Sum types
-----
+# Sum types
 We represent sum types as a list of alternatives.
 
 Each constructor of the sum type is associated with a value that
@@ -732,8 +702,7 @@ case class Alt[A, B](id: String, base: JSchema[B], prism: Prism[A, B])
 ~~~
 </div>
 
-Sum types
-----
+# Sum types
 ~~~scala
 case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
 
@@ -758,8 +727,7 @@ val userRoleAlt = Alt[Role, Unit](
 ~~~
 </div>
 
-Sum types
-----
+# Sum types
 
 ~~~scala
 case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JSchema[A]
@@ -789,15 +757,13 @@ val adminRoleAlt = Alt[Role, Administrator](
 )
 ~~~
 
-Sum types
-----
+# Sum types
 
 ~~~scala
 val roleSchema: JSchema[Role] = JSumT(userRoleAlt :: adminRoleAlt :: Nil)
 ~~~
 
-Sum type serialization
-----------------------
+# Sum type serialization
 
 ~~~scala
 val serializer = new (JSchema ~> (? => Json)) = {
@@ -827,8 +793,7 @@ the set of constructors is not a first-class value in any language that I
 know of.
 </div>
 
-Sum type parsing
-----------------
+# Sum type parsing
 
 ~~~scala
 val decoder = new (JSchema ~> DecodeJson) {
@@ -858,8 +823,7 @@ val decoder = new (JSchema ~> DecodeJson) {
 }
 ~~~
 
-What else can we do?
---------------------
+# What else can we do?
 
 * ScalaCheck [Gen](https://github.com/rickynils/scalacheck/blob/master/src/main/scala/org/scalacheck/Gen.scala) instances
 * Binary serialization using [scodec](https://github.com/scodec/scodec)
@@ -872,8 +836,7 @@ he uses to serialize values to database tables... and provides the 'CREATE TABLE
 statements accordingly.
 </div>
 
-So... what's the catch?
------------------------
+# So... what's the catch?
 
 <div class="incremental">
 * Fixed set of primitives is overly limiting
@@ -882,8 +845,7 @@ So... what's the catch?
 * Unable to provide additional metadata about values/fields 
 </div>
 
-Problem 1: Primitives
----------------------
+# Problem 1: Primitives
 
 ~~~scala
 sealed trait JSchema[A]
@@ -900,8 +862,7 @@ case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JS
 case class JObjT[A](props: FreeAp[PropSchema[A, ?], A]) extends JSchema[A]
 ~~~
 
-Problem 1: Primitives
----------------------
+# Problem 1: Primitives
 
 ~~~scala
 sealed trait JSchema[A]
@@ -918,8 +879,7 @@ case class JSumT[A](alternatives: List[Alt[A, B] forSome { type B }]) extends JS
 case class JObjT[A](props: FreeAp[PropSchema[A, ?], A]) extends JSchema[A]
 ~~~
 
-Problem 1: Primitives
----------------------
+# Problem 1: Primitives
 
 ~~~scala
 sealed trait JSchema[P[_], A]
@@ -952,8 +912,7 @@ type MySchema[A] = JSchema[JsonPrim, A]
 ~~~
 </div>
 
-Problem 1: Primitives
----------------------
+# Problem 1: Primitives
 
 ~~~scala
 trait ToJson[S[_]] {
@@ -965,8 +924,7 @@ trait FromJson[S[_]] {
 }
 ~~~
 
-Problem 1: Primitives
----------------------
+# Problem 1: Primitives
 
 ~~~scala
 implicit def jSchemaToJson[P[_]: ToJson] = new ToJson[JSchema[P, ?]] {
@@ -999,8 +957,7 @@ implicit val JsonPrimToJson = new ToJson[JsonPrim] {
 ~~~
 </div>
 
-Coproducts
-----------
+# Coproducts
 
 ~~~scala
 implicit def primCoToJson[P[_]: ToJson, Q[_]: ToJson] = new ToJson[Coproduct[P, Q, ?]] {
@@ -1026,8 +983,7 @@ implicit def primCoFromJson[P[_]: FromJson, Q[_]: FromJson] = new FromJson[Copro
 }
 ~~~
 
-Coproducts
-----------
+# Coproducts
 
 ~~~scala
 sealed trait MyPrim[A]
@@ -1061,8 +1017,7 @@ implicit object YourPrimToJson extends ToJson[YourPrim] {
 ~~~
 </div>
 
-Coproducts
-----------
+# Coproducts
 
 ~~~scala
 type Both[A] = Coproduct[MyPrim, YourPrim, A]
@@ -1073,8 +1028,7 @@ def str: Both[String] = leftc(MyStr)
 implicitly[ToJson[Both]]
 ~~~
 
-Either and Coproduct
---------------------
+# Either and Coproduct
 
 ~~~scala
 Either[A, B]
@@ -1093,8 +1047,7 @@ Allows you to take two **descriptions** of (sets of) types and create a new
 descriptions.  
 </div></div>
 
-Problem 2: Annotations
-----------------------
+# Problem 2: Annotations
 
 * Nodes of the JSchema tree don't currently contain enough
   information to generate interesting json-schema.
@@ -1106,8 +1059,7 @@ Problem 2: Annotations
 * We might want different kinds of metadata for different
   applications.
 
-Problem 2: Annotations
-----------------------
+# Problem 2: Annotations
 
 ~~~scala
 sealed trait JSchema[P[_], I]
@@ -1121,8 +1073,7 @@ case class JSumT[P[_], I](alternatives: List[Alt[P, I, J] forSome { type J }]) e
 case class JObjT[P[_], I](props: FreeAp[PropSchema[P, I, ?], I]) extends JSchema[P, I]
 ~~~
 
-Problem 2: Annotations
-----------------------
+# Problem 2: Annotations
 
 ~~~scala
 sealed trait JSchema[P[_], A, I]
@@ -1138,8 +1089,7 @@ case class JObjT[A, P[_], I](ann: A, props: FreeAp[PropSchema[P, A, I, ?], I]) e
 
 This is a bit messy and involves a bunch of redundancy. It will work; it just doesn't seem ideal.
 
-Directly recusive data
-----------------------
+# Directly recusive data
 
 ~~~scala
 class Prof(
@@ -1148,8 +1098,7 @@ class Prof(
 )
 ~~~
 
-No longer directly recusive data
---------------------------------
+# No longer directly recusive data
 
 ~~~scala
 class ProfF[S](
@@ -1158,8 +1107,7 @@ class ProfF[S](
 )
 ~~~
 
-Reintroducing recursion with Fix
---------------------------------
+# Reintroducing recursion with Fix
 
 ~~~scala
 class ProfF[S](
@@ -1174,8 +1122,7 @@ case class Fix[F[_]](f: F[Fix[F]])
 type Prof = Fix[ProfF]
 ~~~
 
-Annotating a tree with Cofree
------------------------------
+# Annotating a tree with Cofree
 
 ~~~scala
 class ProfF[S](
@@ -1198,8 +1145,7 @@ type IdProf = Cofree[ProfF, Int]
 
 Hat tip to Rob Norris, go watch his talk [here](https://www.youtube.com/watch?v=7xSfLPD6tiQ)
 
-Annotating a tree with Cofree
------------------------------
+# Annotating a tree with Cofree
 
 ~~~scala
 sealed trait JSchema[P[_], S, I]
@@ -1214,8 +1160,7 @@ This obviously won't work - we've lost the witness for the element type
 of our vector. 
 </div>
 
-Annotating a tree with ~~Cofree~~ HCofree
------------------------------------------
+# Annotating a tree with ~~Cofree~~ HCofree
 
 ~~~scala
 sealed trait JSchema[P[_], F[_], I]
@@ -1249,8 +1194,7 @@ type AnnSchema[P[_], A] = HCofree[A, JSchema[P, ?[_], ?]]
 ~~~
 </div>
 
-Rewriting our interpreters
---------------------------
+# Rewriting our interpreters
 
 ~~~scala
 type Schema[P[_]] = HFix[JSchema[P, ?[_], ?]]
@@ -1276,8 +1220,7 @@ implicit def jSchemaToJson[P[_]: ToJson] = new ToJson[Schema[P, ?]] {
 }
 ~~~
 
-HFix and HCofree
-----------------
+# HFix and HCofree
 
 ~~~scala
 case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
@@ -1291,8 +1234,7 @@ def forget[A, F[_[_], _], I](c: HCofree[A, F, I]): HFix[F, I]
 ~~~
 </div>
 
-HFix and HCofree
-----------------
+# HFix and HCofree
 
 ~~~scala
 case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
@@ -1304,8 +1246,7 @@ case class HCofree[A, F[_[_], _], I](a: A, f: F[HCofree[A, F, ?], I])
 def forget[A, F[_[_], _]]: (HCofree[A, F, ?] ~> HFix[F, ?])
 ~~~
 
-HFix and HCofree
-----------------
+# HFix and HCofree
 
 ~~~scala
 case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
@@ -1322,8 +1263,7 @@ def forget[A, F[_[_], _]]: (HCofree[A, F, ?] ~> HFix[F, ?]) =
   }
 ~~~
 
-HFix and HCofree
-----------------
+# HFix and HCofree
 
 ~~~scala
 case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
@@ -1349,8 +1289,7 @@ trait HFunctor[F[_[_], _]] {
 ~~~
 </div>
 
-HFix and HCofree
-----------------
+# HFix and HCofree
 
 ~~~scala
 case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
@@ -1364,8 +1303,7 @@ final case class HEnvT[A, F[_[_], _], G[_], I](a: A, fg: F[G, I])
 ~~~
 </div>
 
-HFix and HCofree
-----------------
+# HFix and HCofree
 
 ~~~scala
 case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
@@ -1381,8 +1319,7 @@ final case class HEnvT[A, F[_[_], _], G[_], I](a: A, fg: F[G, I])
 type HCofree[A, F[_[_], _], I] = HFix[HEnvT[A, F, ?[_], ?], I]
 ~~~
 
-Working with fixpoint trees
----------------------------
+# Working with fixpoint trees
 
 ~~~scala
 type HAlgebra[F[_[_], _], G[_]] = F[G, ?] ~> G
@@ -1414,8 +1351,7 @@ def forget[F[_[_], _]: HFunctor, A]: (HCofree[A, F, ?] ~> HFix[F, ?]) = cata(for
 ~~~
 </div>
 
-Drawbacks
----------
+# Drawbacks
 
 The Scala compiler hates me.
 
@@ -1440,8 +1376,7 @@ The Scala compiler hates me.
 
 That's the result of leaving off a type ascription, there's actually nothing incorrect about the code.
 
-Conclusion
-----------
+# Conclusion
 
 When we're working at kind `*`, we're dealing with data.
 
