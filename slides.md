@@ -110,7 +110,7 @@ final case class Administrator(department: String, subordinateCount: Long) exten
 }
 ~~~
 
-# Example Schema
+# Example Schema - Product
 
 ~~~scala
 val personSchema: Schema[Prim, Person] = rec(
@@ -126,7 +126,7 @@ val isoLongInstant = Iso(new Instant(_:Long))((_:Instant).getMillis)
 
 To avoid type ascriptions, use all of [\@tpolecat](https://twitter.com/tpolecat)'s flags from [here](http://tpolecat.github.io/2017/04/25/scalac-flags.html)
  
-# Example Schema
+# Example Schema - Sum
  
 ~~~scala
 val roleSchema: Schema[Prim, Role] = Schema.oneOf(
