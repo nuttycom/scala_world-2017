@@ -21,6 +21,11 @@
 * Natural transformations
 * Coproducts
 
+## Resources
+* Slides: [nuttycom.github.io/scala_world-2017](http://nuttycom.github.io/scala_world-2017)
+* Sources: [github.com/nuttycom/scala_world-2017](https://github.com/nuttycom/scala_world-2017)
+* Xenomorph: [github.com/nuttycom/xenomorph](https://github.com/nuttycom/xenomorph)
+
 # Overview
 
 ## Problem: Serialization
@@ -251,7 +256,7 @@ import argonaut.DecodeJson._
 # Primitive Parsing
 
 Create a parser by generating a ~~function~~ natural transformation between
-a schema and an [argonaut](http://argonaut.io) DecodeJson instance.
+a schema and a DecodeJson instance.
 
 ~~~scala
 sealed trait JSchema[A]
@@ -486,8 +491,6 @@ constructor.
 
 
 # Records, Take 2
-
-Is it applicative? We can find out by implementing `ap`.
 
 ~~~scala
 def applicative[O] = new Applicative[Props[O, ?]] {
@@ -1148,12 +1151,24 @@ Hat tip to Rob Norris, go watch his talk [here](https://www.youtube.com/watch?v=
 # Annotating a tree with Cofree
 
 ~~~scala
-sealed trait JSchema[P[_], S, I]
+sealed trait Schema[P[_], I]
 
-case class JVecT[P[_], S,  I](elemType: S) extends JSchema[P, S, Vector[I]]
+case class VecT[P[_], I](elemType: Schema[P, I]) extends Schema[P, Vector[I]]
+~~~
+
+<div class="incremental">
+~~~scala
+sealed trait SchemaF[P[_], S, I]
+
+case class VecTF[P[_], S,  I](elemType: S) extends SchemaF[P, S, Vector[I]]
+~~~
+
+~~~scala
+type Schema[P[_], I] = Fix[SchemaF[P, ?, I]]
 ~~~
 
 Does this work?
+</div>
 
 <div class="notes">
 This obviously won't work - we've lost the witness for the element type
@@ -1163,9 +1178,9 @@ of our vector.
 # Annotating a tree with ~~Cofree~~ HCofree
 
 ~~~scala
-sealed trait JSchema[P[_], F[_], I]
+sealed trait SchemaF[P[_], F[_], I]
 
-case class JVecT[P[_], F[_], I](elemType: F[I]) extends JSchema[P, F, Vector[I]]
+case class VecTF[P[_], F[_], I](elemType: F[I]) extends SchemaF[P, F, Vector[I]]
 ~~~
 
 <div class="incremental">
@@ -1176,7 +1191,7 @@ case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <div class="incremental">
 ~~~scala
-type Schema[P[_]] = HFix[JSchema[P, ?[_], ?]]
+type Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]
 ~~~
 </div>
 
@@ -1190,22 +1205,22 @@ case class HCofree[A, F[_[_], _], I](a: A, f: F[HCofree[A, F, ?], I])
 
 <div class="incremental">
 ~~~scala
-type AnnSchema[P[_], A] = HCofree[A, JSchema[P, ?[_], ?]]
+type AnnSchema[P[_], A] = HCofree[A, SchemaF[P, ?[_], ?]]
 ~~~
 </div>
 
 # Rewriting our interpreters
 
 ~~~scala
-type Schema[P[_]] = HFix[JSchema[P, ?[_], ?]]
+type Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]
 ~~~
 
 ~~~scala
-implicit def jSchemaToJson[P[_]: ToJson] = new ToJson[Schema[P, ?]] {
+implicit def schemaToJson[P[_]: ToJson] = new ToJson[Schema[P, ?]] {
   val serializer = new (Schema[P, ?] ~> (? => Json)) = {
     def apply[I](schema: Schema[P, I]): I => Json = {
       schema.unfix match {
-        case JSumT(alts) => 
+        case SumT(alts) => 
           (value: I) => alts.flatMap({ 
             case Alt(id, base, prism) => 
               prism.getOption(value).map(serializer(base)).toList map { 
