@@ -81,6 +81,14 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 <li>Natural transformations</li>
 <li>Coproducts</li>
 </ul>
+<div id="resources" class="section level2">
+<h2>Resources</h2>
+<ul>
+<li>Slides: <a href="http://nuttycom.github.io/scala_world-2017">nuttycom.github.io/scala_world-2017</a></li>
+<li>Sources: <a href="https://github.com/nuttycom/scala_world-2017">github.com/nuttycom/scala_world-2017</a></li>
+<li>Xenomorph: <a href="https://github.com/nuttycom/xenomorph/tree/tutorial">github.com/nuttycom/xenomorph/tree/tutorial</a></li>
+</ul>
+</div>
 </div>
 <div id="overview" class="slide section level1">
 <h1>Overview</h1>
@@ -269,7 +277,7 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </div>
 <div id="primitive-parsing-2" class="slide section level1">
 <h1>Primitive Parsing</h1>
-<p>Create a parser by generating a <del>function</del> natural transformation between a schema and an <a href="http://argonaut.io">argonaut</a> DecodeJson instance.</p>
+<p>Create a parser by generating a <del>function</del> natural transformation between a schema and a DecodeJson instance.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[A]
 
 <span class="kw">case</span> <span class="kw">object</span> JNumT <span class="kw">extends</span> JSchema[Long]
@@ -418,7 +426,6 @@ Kris Nuttycombe (<span class="citation">@nuttycom</span>)
 </div>
 <div id="records-take-2-1" class="slide section level1">
 <h1>Records, Take 2</h1>
-<p>Is it applicative? We can find out by implementing <code>ap</code>.</p>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> applicative[O] = <span class="kw">new</span> Applicative[Props[O, ?]] {
   <span class="kw">def</span> point[A](a: =&gt; A): Props[O, A] = <span class="fu">PureProps</span>(a)
 
@@ -942,22 +949,28 @@ implicitly[ToJson[Both]]</code></pre></div>
 </div>
 <div id="annotating-a-tree-with-cofree-1" class="slide section level1">
 <h1>Annotating a tree with Cofree</h1>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[P[_], S, I]
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> Schema[P[_], I]
 
-<span class="kw">case</span> <span class="kw">class</span> JVecT[P[_], S,  I](elemType: S) <span class="kw">extends</span> JSchema[P, S, Vector[I]]</code></pre></div>
+<span class="kw">case</span> <span class="kw">class</span> VecT[P[_], I](elemType: Schema[P, I]) <span class="kw">extends</span> Schema[P, Vector[I]]</code></pre></div>
+<div class="incremental">
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> SchemaF[P[_], S, I]
+
+<span class="kw">case</span> <span class="kw">class</span> VecTF[P[_], S,  I](elemType: S) <span class="kw">extends</span> SchemaF[P, S, Vector[I]]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_], I] = Fix[SchemaF[P, ?, I]]</code></pre></div>
 <p>Does this work?</p>
+</div>
 
 </div>
 <div id="annotating-a-tree-with-cofree-hcofree" class="slide section level1">
 <h1>Annotating a tree with <del>Cofree</del> HCofree</h1>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> JSchema[P[_], F[_], I]
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">sealed</span> <span class="kw">trait</span> SchemaF[P[_], F[_], I]
 
-<span class="kw">case</span> <span class="kw">class</span> JVecT[P[_], F[_], I](elemType: F[I]) <span class="kw">extends</span> JSchema[P, F, Vector[I]]</code></pre></div>
+<span class="kw">case</span> <span class="kw">class</span> VecTF[P[_], F[_], I](elemType: F[I]) <span class="kw">extends</span> SchemaF[P, F, Vector[I]]</code></pre></div>
 <div class="incremental">
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])</code></pre></div>
 </div>
 <div class="incremental">
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[JSchema[P, ?[_], ?]]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]</code></pre></div>
 </div>
 <div class="incremental">
 <div>
@@ -966,17 +979,17 @@ implicitly[ToJson[Both]]</code></pre></div>
 </div>
 </div>
 <div class="incremental">
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> AnnSchema[P[_], A] = HCofree[A, JSchema[P, ?[_], ?]]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> AnnSchema[P[_], A] = HCofree[A, SchemaF[P, ?[_], ?]]</code></pre></div>
 </div>
 </div>
 <div id="rewriting-our-interpreters" class="slide section level1">
 <h1>Rewriting our interpreters</h1>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[JSchema[P, ?[_], ?]]</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">implicit</span> <span class="kw">def</span> jSchemaToJson[P[_]: ToJson] = <span class="kw">new</span> ToJson[Schema[P, ?]] {
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">implicit</span> <span class="kw">def</span> schemaToJson[P[_]: ToJson] = <span class="kw">new</span> ToJson[Schema[P, ?]] {
   <span class="kw">val</span> serializer = <span class="kw">new</span> (Schema[P, ?] ~&gt; (? =&gt; Json)) = {
     <span class="kw">def</span> apply[I](schema: Schema[P, I]): I =&gt; Json = {
       schema.<span class="fu">unfix</span> <span class="kw">match</span> {
-        <span class="kw">case</span> <span class="fu">JSumT</span>(alts) =&gt; 
+        <span class="kw">case</span> <span class="fu">SumT</span>(alts) =&gt; 
           (value: I) =&gt; alts.<span class="fu">flatMap</span>({ 
             <span class="kw">case</span> <span class="fu">Alt</span>(id, base, prism) =&gt; 
               prism.<span class="fu">getOption</span>(value).<span class="fu">map</span>(<span class="fu">serializer</span>(base)).<span class="fu">toList</span> map { 
