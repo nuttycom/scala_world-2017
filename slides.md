@@ -24,7 +24,7 @@
 ## Resources
 * Slides: [nuttycom.github.io/scala_world-2017](http://nuttycom.github.io/scala_world-2017)
 * Sources: [github.com/nuttycom/scala_world-2017](https://github.com/nuttycom/scala_world-2017)
-* Xenomorph: [github.com/nuttycom/xenomorph](https://github.com/nuttycom/xenomorph)
+* Xenomorph: [github.com/nuttycom/xenomorph/tree/tutorial](https://github.com/nuttycom/xenomorph/tree/tutorial)
 
 # Overview
 
