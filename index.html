@@ -970,7 +970,7 @@ implicitly[ToJson[Both]]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">case</span> <span class="kw">class</span> HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])</code></pre></div>
 </div>
 <div class="incremental">
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_], I] = HFix[SchemaF[P, ?[_], ?], I]</code></pre></div>
 </div>
 <div class="incremental">
 <div>
@@ -984,7 +984,7 @@ implicitly[ToJson[Both]]</code></pre></div>
 </div>
 <div id="rewriting-our-interpreters" class="slide section level1">
 <h1>Rewriting our interpreters</h1>
-<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">type</span> Schema[P[_], I] = HFix[SchemaF[P, ?[_], ?], I]</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">implicit</span> <span class="kw">def</span> schemaToJson[P[_]: ToJson] = <span class="kw">new</span> ToJson[Schema[P, ?]] {
   <span class="kw">val</span> serializer = <span class="kw">new</span> (Schema[P, ?] ~&gt; (? =&gt; Json)) = {
     <span class="kw">def</span> apply[I](schema: Schema[P, I]): I =&gt; Json = {
