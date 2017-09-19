@@ -1191,7 +1191,7 @@ case class HFix[F[_[_], _], I](unfix: F[HFix[F, ?], I])
 
 <div class="incremental">
 ~~~scala
-type Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]
+type Schema[P[_], I] = HFix[SchemaF[P, ?[_], ?], I]
 ~~~
 </div>
 
@@ -1212,7 +1212,7 @@ type AnnSchema[P[_], A] = HCofree[A, SchemaF[P, ?[_], ?]]
 # Rewriting our interpreters
 
 ~~~scala
-type Schema[P[_]] = HFix[SchemaF[P, ?[_], ?]]
+type Schema[P[_], I] = HFix[SchemaF[P, ?[_], ?], I]
 ~~~
 
 ~~~scala
